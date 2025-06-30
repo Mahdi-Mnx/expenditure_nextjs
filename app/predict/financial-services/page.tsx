@@ -178,37 +178,6 @@ export default function FinancialServicesPage() {
             </div>
           </CardContent>
         </Card>
-
-        {/* Summary */}
-        <Card className="bg-slate-700 border-slate-600">
-          <CardHeader>
-            <CardTitle className="text-white">Financial Services Summary</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid md:grid-cols-2 gap-4 text-sm">
-              <div>
-                <span className="text-slate-400">Total Credit Access:</span>
-                <span className="text-white ml-2 font-medium">
-                  ${state.inputs.cr15_04quantity + state.inputs.cr15_05quantity}
-                </span>
-              </div>
-              <div>
-                <span className="text-slate-400">Credit Services:</span>
-                <span className="text-white ml-2 font-medium">
-                  {[state.inputs.cr15_06, state.inputs.cr15_10].filter((v) => v === 1).length} types available
-                </span>
-              </div>
-              <div>
-                <span className="text-slate-400">Food Security:</span>
-                <span className="text-white ml-2 font-medium">{state.inputs.foodsec7_07 ? "At Risk" : "Secure"}</span>
-              </div>
-              <div>
-                <span className="text-slate-400">Additional NFE:</span>
-                <span className="text-white ml-2 font-medium">${state.inputs.nfe16_33 + state.inputs.nfe16_13}</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
       </div>
     </PredictionLayout>
   )

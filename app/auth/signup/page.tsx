@@ -12,11 +12,15 @@ import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { Checkbox } from "@/components/ui/checkbox"
 import { ArrowLeft, Eye, EyeOff, Mail, Lock, User, Shield, Users, Star, Loader2 } from "lucide-react"
-
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { useRouter } from "next/navigation";
 export default function SignupPage() {
+  const router = useRouter();
+  const supabase = createClientComponentClient();
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -36,22 +40,45 @@ export default function SignupPage() {
       return
     }
 
-    setIsLoading(true)
-    // Simulate signup process
-    await new Promise((resolve) => setTimeout(resolve, 2000))
-    setIsLoading(false)
-    // Redirect to sample report or onboarding
-    window.location.href = "/sample-report"
+     try {
+      // Sign up with Supabase
+      const { data, error: signUpError } = await supabase.auth.signUp({
+        email: formData.email,
+        password: formData.password,
+      });
+      console.log("data: ", data)
+      if (signUpError) {
+        throw signUpError;
+      }
+      localStorage.setItem("token", data.session?.access_token ?? "")
+
+      // Redirect to confirmation page
+      router.push("/auth/login");
+    } catch (error) {
+      console.error("Signup error:", error);
+      // setError(error.message || "An error occurred during signup");
+    } finally {
+      setIsLoading(false);
+    }
   }
 
-  const handleSocialSignup = (provider: string) => {
-    // Simulate social signup
-    setIsLoading(true)
-    setTimeout(() => {
-      setIsLoading(false)
-      window.location.href = "/sample-report"
-    }, 1500)
+  const handleSocialSignup = async (provider: "google" | "github") => {
+  setIsLoading(true)
+  try {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider,
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`, // adjust if needed
+      },
+    });
+    if (error) throw error;
+  } catch (err) {
+    console.error("OAuth signup error:", err);
+  } finally {
+    setIsLoading(false);
   }
+};
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden">
