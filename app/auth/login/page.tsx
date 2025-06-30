@@ -35,7 +35,30 @@ export default function LoginPage() {
     if (error) throw error;
 
     localStorage.setItem("token", data.session?.access_token ?? "");
-    router.push("/dashboard");
+    const user = data.user;
+
+    if (user) {
+      // Check if profile exists
+      const { data: profile, error: profileError } = await supabase
+        .from("profiles")
+        .select("id")
+        .eq("id", user.id)
+        .single();
+
+      // If not exists, insert
+      if (!profile && !profileError) {
+        await supabase.from("profiles").insert({
+          id: user.id,
+          email: user.email,
+        });
+      }
+
+      // Save session locally
+      localStorage.setItem("token", data.session?.access_token ?? "");
+      localStorage.setItem("user", JSON.stringify(user));
+    }
+
+    // router.push("/dashboard");
   } catch (err) {
     console.error("Login error:", err);
     alert("Invalid credentials or login failed.");
@@ -53,7 +76,7 @@ export default function LoginPage() {
         redirectTo: `${window.location.origin}/auth/callback`, // Make sure this exists
       },
     });
-
+    console.log("data: ", data)
     if (error) throw error;
     // No need to redirect manually — Supabase does it
   } catch (err) {

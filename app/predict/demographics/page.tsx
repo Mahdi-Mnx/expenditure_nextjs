@@ -13,7 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { usePrediction } from "@/contexts/prediction-context";
+import { waterTypeOptions, regionOptions, usePrediction } from "@/contexts/prediction-context"
 import { Users, MapPin, DollarSign, Droplets, Zap } from "lucide-react";
 
 export default function DemographicsPage() {
@@ -43,7 +43,7 @@ export default function DemographicsPage() {
       description="Tell us about your household composition and basic information"
       onNext={handleNext}
       onPrevious={handlePrevious}
-      canGoNext={state.inputs.hhsize > 0 && state.inputs.region_n > 0}
+      canGoNext={!!state.inputs.hhsize && !!state.inputs.region_n && !!state.inputs.hh_water_type}
     >
       <div className="space-y-6">
         {/* Basic Demographics */}
@@ -79,27 +79,21 @@ export default function DemographicsPage() {
                   <MapPin className="h-4 w-4" />
                   Region Type
                 </Label>
-                <Select
-                  value={state.inputs.region_n.toString()}
-                  onValueChange={(value) =>
-                    updateInput("region_n", Number(value))
-                  }
-                >
-                  <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="bg-slate-700 border-slate-600">
-                    <SelectItem value="1">
-                      Rural - Countryside, farming areas
+              <Select
+                value={state.inputs.region_n?.toString() ?? ""}
+                onValueChange={(value) => updateInput("region_n", Number(value))}
+              >
+                <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
+                  <SelectValue placeholder="Select Region" />
+                </SelectTrigger>
+                <SelectContent className="bg-slate-700 border-slate-600">
+                  {regionOptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value.toString()}>
+                      {option.label}
                     </SelectItem>
-                    <SelectItem value="2">
-                      Urban - City centers, metropolitan areas
-                    </SelectItem>
-                    <SelectItem value="3">
-                      Suburban - Residential areas near cities
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
+                  ))}
+                </SelectContent>
+              </Select>
                 <p className="text-sm text-slate-400">
                   This affects regional cost adjustments in predictions
                 </p>
@@ -171,67 +165,20 @@ export default function DemographicsPage() {
                   Water Source
                 </Label>
                 <Select
-                  value={state.inputs.hh_water_type.toString()}
-                  onValueChange={(value) =>
-                    updateInput("hh_water_type", Number(value))
-                  }
+                  value={state.inputs.hh_water_type?.toString() ?? ""}
+                  onValueChange={(value) => updateInput("hh_water_type", Number(value))}
                 >
                   <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
-                    <SelectValue />
+                    <SelectValue placeholder="Select Water Source" />
                   </SelectTrigger>
                   <SelectContent className="bg-slate-700 border-slate-600">
-                    <SelectItem value="1">
-                      Piped Water - Municipal supply
-                    </SelectItem>
-                    <SelectItem value="2">Well Water - Private well</SelectItem>
-                    <SelectItem value="3">
-                      Other Source - River, spring, etc.
-                    </SelectItem>
+                    {waterTypeOptions.map((option) => (
+                      <SelectItem key={option.value} value={option.value.toString()}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Summary */}
-        <Card className="bg-slate-700 border-slate-600">
-          <CardHeader>
-            <CardTitle className="text-white">Summary</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid md:grid-cols-2 gap-4 text-sm">
-              <div>
-                <span className="text-slate-400">Household Size:</span>
-                <span className="text-white ml-2 font-medium">
-                  {state.inputs.hhsize} people
-                </span>
-              </div>
-              <div>
-                <span className="text-slate-400">Region:</span>
-                <span className="text-white ml-2 font-medium">
-                  {state.inputs.region_n === 1
-                    ? "Rural"
-                    : state.inputs.region_n === 2
-                    ? "Urban"
-                    : "Suburban"}
-                </span>
-              </div>
-              <div>
-                <span className="text-slate-400">Electricity:</span>
-                <span className="text-white ml-2 font-medium">
-                  {state.inputs.hh_electricity ? "Available" : "Not Available"}
-                </span>
-              </div>
-              <div>
-                <span className="text-slate-400">Water Source:</span>
-                <span className="text-white ml-2 font-medium">
-                  {state.inputs.hh_water_type === 1
-                    ? "Piped Water"
-                    : state.inputs.hh_water_type === 2
-                    ? "Well Water"
-                    : "Other Source"}
-                </span>
               </div>
             </div>
           </CardContent>
