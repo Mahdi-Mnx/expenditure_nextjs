@@ -4,6 +4,7 @@ import type React from "react"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { ArrowLeft, ArrowRight } from "lucide-react"
+import { DashboardLayout } from "./dashboard-layout"
 
 const steps = [
   { title: "Demographics", description: "Household composition" },
@@ -36,8 +37,9 @@ export function PredictionLayout({
   const progress = ((currentStep + 1) / steps.length) * 100
 
   return (
+    <DashboardLayout>
     <div className="min-h-screen bg-slate-900 py-8">
-      <div className="container mx-auto px-4 max-w-4xl">
+      <div className="container mx-auto px-4 ">
         {/* Progress Header */}
         <div className="mb-8">
           <div className="flex justify-between items-center mb-4">
@@ -73,7 +75,7 @@ export function PredictionLayout({
 
         {/* Navigation */}
         <div className="flex justify-between">
-          <Button variant="outline" onClick={onPrevious} className="border-slate-600 text-slate-300 hover:bg-slate-700">
+          <Button variant="outline" onClick={onPrevious} className="border-slate-600 text-black hover:bg-slate-700">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Previous
           </Button>
@@ -89,5 +91,6 @@ export function PredictionLayout({
         </div>
       </div>
     </div>
+    </DashboardLayout>
   )
 }

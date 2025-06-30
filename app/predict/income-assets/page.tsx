@@ -169,40 +169,6 @@ export default function IncomeAssetsPage() {
             </div>
           </CardContent>
         </Card>
-
-        {/* Asset Summary */}
-        <Card className="bg-slate-700 border-slate-600">
-          <CardHeader>
-            <CardTitle className="text-white">Asset Summary</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid md:grid-cols-2 gap-4 text-sm">
-              <div>
-                <span className="text-slate-400">Monthly Remittances:</span>
-                <span className="text-white ml-2 font-medium">${state.inputs.remt9_11}</span>
-              </div>
-              <div>
-                <span className="text-slate-400">Total Livestock:</span>
-                <span className="text-white ml-2 font-medium">
-                  {state.inputs.liv4_21 + state.inputs.liv4_22 + state.inputs.liv4_25} animals
-                </span>
-              </div>
-              <div>
-                <span className="text-slate-400">Agricultural Assets:</span>
-                <span className="text-white ml-2 font-medium">
-                  {[state.inputs.liv4_04, state.inputs.liv4_12, state.inputs.liv4_24].filter((v) => v === 1).length}{" "}
-                  types
-                </span>
-              </div>
-              <div>
-                <span className="text-slate-400">Income Diversification:</span>
-                <span className="text-white ml-2 font-medium">
-                  {state.inputs.remt9_11 > 0 ? "Multiple sources" : "Single source"}
-                </span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
       </div>
     </PredictionLayout>
   )

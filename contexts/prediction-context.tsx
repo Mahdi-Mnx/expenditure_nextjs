@@ -1,79 +1,67 @@
 "use client"
 
+import { PredictionInputs } from "@/types/predict";
 import type React from "react"
 import { createContext, useContext, useReducer, type ReactNode } from "react"
 
-export interface PredictionInputs {
-  // Expenditures
-  exp_food: number
-  exp_nfnd: number
-  exp_rent: number
-  pce: number
-  pcer: number
+// Water type options (same as Expo app)
+export const waterTypeOptions = [
+  { label: "Piped water into dwelling", value: 1 },
+  { label: "Tubewell/borehole", value: 2 },
+  { label: "Tanker-truck", value: 3 },
+  { label: "Protected dug well", value: 4 },
+  { label: "Piped water to yard/plot", value: 5 },
+  { label: "Rainwater collection", value: 6 },
+  { label: "Natural surface water (river, dam, lake)", value: 7 },
+  { label: "Public tap/standpipe", value: 8 },
+  { label: "Unprotected dug well", value: 9 },
+  { label: "Cart with small tank/drum", value: 10 },
+  { label: "Protected spring", value: 11 },
+  { label: "Surface water (pond, stream, canal)", value: 12 },
+  { label: "Water catchment", value: 13 },
+  { label: "From neighbours", value: 14 },
+  { label: "Unprotected spring", value: 15 },
+  { label: "Bottled water", value: 16 },
+  { label: "Other (specify)", value: 17 }
+];
 
-  // Demographics & Household
-  hhsize: number
-  region_n: number
-  poor: number
+// Region options (same as Expo app)
+export const regionOptions = [
+  { label: "Waqooyi Galbeed", value: 1 },
+  { label: "Banadir", value: 2 },
+  { label: "Togdheer", value: 3 },
+  { label: "Mudug", value: 4 },
+  { label: "Galgaduud", value: 5 },
+  { label: "Middle Shabelle", value: 6 },
+  { label: "Gedo", value: 7 },
+  { label: "Lower Shabelle", value: 8 },
+  { label: "Hiraan", value: 9 },
+  { label: "Bay", value: 10 },
+  { label: "Nugaal", value: 11 },
+  { label: "Bari", value: 12 },
+  { label: "Lower Juba", value: 13 },
+  { label: "Bakool", value: 14 },
+  { label: "Sool", value: 15 },
+  { label: "Sanaag", value: 16 },
+  { label: "Awdal", value: 17 }
+];
 
-  // Credit & Financial
-  cr15_04quantity: number
-  cr15_05quantity: number
-  cr15_06: number
-  cr15_10: number
-
-  // Utilities & Services
-  hh_water_type: number
-  hh_electricity: number
-  foodsec7_07: number
-
-  // Remittances & Income
-  remt9_11: number
-
-  // Livestock & Assets
-  liv4_21: number
-  liv4_22: number
-  liv4_24: number
-  liv4_25: number
-  liv4_04: number
-  liv4_12: number
-  liv4_13: number
-
-  // Non-Food Expenditures
-  nfe16_33: number
-  nfe16_13: number
-
-  // Shocks & Events
-  shock10_03: number
-  shock10_04: number
-  shock10_07_21: number
-  shock10_07_23: number
-
-  // Calculated fields (auto-generated)
-  log_exp_food: number
-  log_exp_nfnd: number
-  log_exp_rent: number
-
-  // User info
-  name?: string
-  email?: string
-}
 
 interface PredictionState {
-  inputs: PredictionInputs
-  currentStep: number
-  completedSteps: number[]
-  predictions: {
-    amount: number
-    confidence: number
-    factors: string[]
+  inputs: Partial<PredictionInputs>;
+  currentStep: number;
+  completedSteps: number[];
+  predictions?: {
+    amount: number;
+    confidence: number;
+    factors: string[];
     breakdown: {
-      food: number
-      nonFood: number
-      housing: number
-      other: number
-    }
-  } | null
+      food: number;
+      nonFood: number;
+      housing: number;
+      other: number;
+    };
+  };
 }
 
 type PredictionAction =
@@ -84,64 +72,21 @@ type PredictionAction =
   | { type: "RESET" }
 
 const initialState: PredictionState = {
-  inputs: {
-    exp_food: 500,
-    exp_nfnd: 300,
-    exp_rent: 0,
-    pce: 800,
-    pcer: 20,
-    poor: 0,
-    cr15_04quantity: 0,
-    cr15_05quantity: 0,
-    cr15_06: 0,
-    cr15_10: 0,
-    hhsize: 10,
-    region_n: 2,
-    hh_water_type: 1,
-    hh_electricity: 1,
-    foodsec7_07: 0,
-    remt9_11: 700,
-    liv4_21: 0,
-    liv4_22: 0,
-    liv4_24: 0,
-    liv4_25: 0,
-    liv4_04: 0,
-    liv4_12: 0,
-    liv4_13: 0,
-    nfe16_33: 0,
-    nfe16_13: 0,
-    shock10_03: 0,
-    shock10_04: 0,
-    shock10_07_21: 0,
-    shock10_07_23: 0,
-    log_exp_food: Math.log1p(500),
-    log_exp_nfnd: Math.log1p(300),
-    log_exp_rent: Math.log1p(0),
-  },
+  inputs: {},
   currentStep: 0,
   completedSteps: [],
-  predictions: null,
+  predictions: undefined,
 }
 
 function predictionReducer(state: PredictionState, action: PredictionAction): PredictionState {
   switch (action.type) {
     case "UPDATE_INPUTS":
-      const updatedInputs = { ...state.inputs, ...action.payload }
-
-      // Auto-calculate log values
-      if (action.payload.exp_food !== undefined) {
-        updatedInputs.log_exp_food = Math.log1p(action.payload.exp_food)
-      }
-      if (action.payload.exp_nfnd !== undefined) {
-        updatedInputs.log_exp_nfnd = Math.log1p(action.payload.exp_nfnd)
-      }
-      if (action.payload.exp_rent !== undefined) {
-        updatedInputs.log_exp_rent = Math.log1p(action.payload.exp_rent)
-      }
-
       return {
         ...state,
-        inputs: updatedInputs,
+        inputs: {
+          ...state.inputs,
+          ...action.payload
+        },
       }
     case "SET_STEP":
       return {

@@ -7,71 +7,61 @@ import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { usePrediction } from "@/contexts/prediction-context"
 import { TrendingUp, Download, Share, RotateCcw, CheckCircle, AlertCircle, DollarSign } from "lucide-react"
-
+import { predictExpenditure } from "@/lib/api"
+import useSWR from "swr"
+import { DashboardLayout } from "@/components/dashboard-layout"
 export default function ResultsPage() {
   const { state, dispatch } = usePrediction()
   const router = useRouter()
+  console.log("state: ", state)
+  const fetchPrediction = async () => {
+  return await predictExpenditure(state.inputs)
+}
 
-  // Generate comprehensive prediction when component mounts
-  useEffect(() => {
-    const generatePrediction = () => {
-      const {
-        exp_food,
-        exp_nfnd,
-        exp_rent,
-        pce,
-        hhsize,
-        region_n,
-        remt9_11,
-        shock10_04,
-        poor,
-        hh_electricity,
-        hh_water_type,
-      } = state.inputs
+const { data, error } = useSWR("prediction", fetchPrediction, {
+  revalidateOnFocus: false,
+  shouldRetryOnError: false,
+})
 
-      // Complex prediction algorithm based on all inputs
-      const baseAmount = exp_food + exp_nfnd + exp_rent
-      const householdMultiplier = 1 + (hhsize - 1) * 0.12
-      const regionMultiplier = region_n === 2 ? 1.15 : region_n === 3 ? 1.08 : 0.95
-      const shockImpact = shock10_04 * 0.1
-      const povertyAdjustment = poor ? 0.85 : 1.0
-      const utilityBonus = (hh_electricity + hh_water_type) * 0.05
-      const remittanceImpact = remt9_11 * 0.3
+ useEffect(() => {
+  if (data && !state.predictions) {
+    const food = state.inputs.exp_food ?? 0;
+    const nonFood = state.inputs.exp_nfnd ?? 0;
+    const housing = state.inputs.exp_rent ?? 0;
 
-      const prediction = Math.round(
-        (baseAmount * householdMultiplier * regionMultiplier * povertyAdjustment + remittanceImpact) *
-          (1 + utilityBonus - shockImpact),
-      )
+    const totalInput = food + nonFood + housing || 1; // avoid divide-by-zero
 
-      const confidence = Math.max(
-        75,
-        Math.min(95, 90 - shock10_04 * 5 + hh_electricity * 3 + hh_water_type * 2 - poor * 10),
-      )
+    const total = data.predicted_expenditure;
 
-      dispatch({
-        type: "SET_PREDICTION",
-        payload: {
-          amount: prediction,
-          confidence,
-          factors: [
-            `Household size: ${hhsize} people (${householdMultiplier.toFixed(2)}x multiplier)`,
-            `Region: ${region_n === 2 ? "Urban" : region_n === 3 ? "Suburban" : "Rural"} (${regionMultiplier.toFixed(2)}x)`,
-            `Economic shocks: Level ${shock10_04} impact`,
-            `Remittances: $${remt9_11} monthly boost`,
-            `Utilities access: ${hh_electricity ? "Electricity" : "No electricity"}, ${hh_water_type === 1 ? "Piped water" : "Other water"}`,
-          ],
-          breakdown: {
-            food: Math.round(prediction * 0.4),
-            nonFood: Math.round(prediction * 0.25),
-            housing: Math.round(prediction * 0.2),
-            other: Math.round(prediction * 0.15),
-          },
+    const foodRatio = food / totalInput;
+    const nonFoodRatio = nonFood / totalInput;
+    const housingRatio = housing / totalInput;
+    const otherRatio = 1 - (foodRatio + nonFoodRatio + housingRatio);
+
+    dispatch({
+      type: "SET_PREDICTION",
+      payload: {
+        amount: total,
+        confidence: 90,
+        factors: [
+          `Household size: ${state.inputs.hhsize} people`,
+          `Region: ${state.inputs.region_n === 2 ? "Urban" : "Rural"}`,
+          `Food expenditure: $${food}`,
+          `Non-food expenditure: $${nonFood}`,
+          `Housing expenditure: $${housing}`,
+        ],
+        breakdown: {
+          food: Math.round(total * foodRatio),
+          nonFood: Math.round(total * nonFoodRatio),
+          housing: Math.round(total * housingRatio),
+          other: Math.round(total * otherRatio),
         },
-      })
-    }
+      },
+    });
+  }
+}, [data]);
 
-    generatePrediction()
-  }, [state.inputs, dispatch])
+
 
   const handleNewPrediction = () => {
     dispatch({ type: "RESET" })
@@ -100,6 +90,7 @@ export default function ResultsPage() {
   }
 
   return (
+    <DashboardLayout>
     <div className="min-h-screen bg-slate-900 py-8">
       <div className="container mx-auto px-4 max-w-4xl">
         {/* Header */}
@@ -133,19 +124,19 @@ export default function ResultsPage() {
             {/* Breakdown */}
             <div className="grid md:grid-cols-4 gap-4">
               <div className="text-center p-4 bg-red-900/30 border border-red-500/30 rounded-lg">
-                <div className="text-2xl font-bold text-red-300">${state.predictions.breakdown.food}</div>
+                <div className="text-2xl font-bold text-red-300">${state.predictions.breakdown.food.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
                 <div className="text-sm text-slate-400">Food</div>
               </div>
               <div className="text-center p-4 bg-orange-900/30 border border-orange-500/30 rounded-lg">
-                <div className="text-2xl font-bold text-orange-300">${state.predictions.breakdown.nonFood}</div>
+                <div className="text-2xl font-bold text-orange-300">${state.predictions.breakdown.nonFood.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} </div>
                 <div className="text-sm text-slate-400">Non-Food</div>
               </div>
               <div className="text-center p-4 bg-blue-900/30 border border-blue-500/30 rounded-lg">
-                <div className="text-2xl font-bold text-blue-300">${state.predictions.breakdown.housing}</div>
+                <div className="text-2xl font-bold text-blue-300">${state.predictions.breakdown.housing.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
                 <div className="text-sm text-slate-400">Housing</div>
               </div>
               <div className="text-center p-4 bg-purple-900/30 border border-purple-500/30 rounded-lg">
-                <div className="text-2xl font-bold text-purple-300">${state.predictions.breakdown.other}</div>
+                <div className="text-2xl font-bold text-purple-300">${state.predictions.breakdown.other.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
                 <div className="text-sm text-slate-400">Other</div>
               </div>
             </div>
@@ -178,7 +169,7 @@ export default function ResultsPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {state.inputs.shock10_04 > 2 && (
+              {(state.inputs.shock10_04 ?? 0) > 2 && (
                 <div className="flex items-start gap-3 p-4 bg-red-900/20 border border-red-500/30 rounded-lg">
                   <AlertCircle className="h-5 w-5 text-red-400 mt-0.5 flex-shrink-0" />
                   <div>
@@ -191,7 +182,7 @@ export default function ResultsPage() {
                 </div>
               )}
 
-              {state.inputs.hhsize > 8 && (
+              {(state.inputs.hhsize ?? 0) > 8 && (
                 <div className="flex items-start gap-3 p-4 bg-blue-900/20 border border-blue-500/30 rounded-lg">
                   <CheckCircle className="h-5 w-5 text-blue-400 mt-0.5 flex-shrink-0" />
                   <div>
@@ -204,7 +195,7 @@ export default function ResultsPage() {
                 </div>
               )}
 
-              {state.inputs.remt9_11 > 500 && (
+             {(state.inputs.remt9_11 ?? 0) > 500 && (
                 <div className="flex items-start gap-3 p-4 bg-green-900/20 border border-green-500/30 rounded-lg">
                   <CheckCircle className="h-5 w-5 text-green-400 mt-0.5 flex-shrink-0" />
                   <div>
@@ -243,7 +234,7 @@ export default function ResultsPage() {
           <Button
             onClick={handleShare}
             variant="outline"
-            className="border-slate-600 text-slate-300 hover:bg-slate-700"
+            className="border-slate-600 text-black hover:bg-slate-200"
           >
             <Share className="mr-2 h-4 w-4" />
             Share Results
@@ -252,52 +243,14 @@ export default function ResultsPage() {
           <Button
             onClick={handleNewPrediction}
             variant="outline"
-            className="border-slate-600 text-slate-300 hover:bg-slate-700"
+            className="border-slate-600 text-black hover:bg-slate-200"
           >
             <RotateCcw className="mr-2 h-4 w-4" />
             New Prediction
           </Button>
         </div>
-
-        {/* Data Summary */}
-        <Card className="bg-slate-700 border-slate-600 mt-8">
-          <CardHeader>
-            <CardTitle className="text-white">Input Data Summary</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid md:grid-cols-3 gap-4 text-sm">
-              <div>
-                <div className="text-slate-400 mb-2">Demographics</div>
-                <div className="space-y-1">
-                  <div>Household: {state.inputs.hhsize} people</div>
-                  <div>
-                    Region: {state.inputs.region_n === 2 ? "Urban" : state.inputs.region_n === 3 ? "Suburban" : "Rural"}
-                  </div>
-                  <div>Poverty: {state.inputs.poor ? "Below line" : "Above line"}</div>
-                </div>
-              </div>
-              <div>
-                <div className="text-slate-400 mb-2">Expenditures</div>
-                <div className="space-y-1">
-                  <div>Food: ${state.inputs.exp_food}</div>
-                  <div>Non-Food: ${state.inputs.exp_nfnd}</div>
-                  <div>Rent: ${state.inputs.exp_rent}</div>
-                  <div>PCE: ${state.inputs.pce}</div>
-                </div>
-              </div>
-              <div>
-                <div className="text-slate-400 mb-2">Other Factors</div>
-                <div className="space-y-1">
-                  <div>Remittances: ${state.inputs.remt9_11}</div>
-                  <div>Shock Level: {state.inputs.shock10_04}</div>
-                  <div>Electricity: {state.inputs.hh_electricity ? "Yes" : "No"}</div>
-                  <div>Water: Type {state.inputs.hh_water_type}</div>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
       </div>
     </div>
+    </DashboardLayout>
   )
 }

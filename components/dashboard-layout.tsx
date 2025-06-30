@@ -2,13 +2,14 @@
 
 import type React from "react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import { LayoutDashboard, ShoppingCart, Home, Settings, TestTube, Plus, User, LogOut } from "lucide-react"
+import { LayoutDashboard, ShoppingCart, Home, Settings, TestTube, Plus, User, LogOut, Zap } from "lucide-react"
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+  { name: "Prediction", href: "/predict/demographics", icon: Zap },
   { name: "Food", href: "/food", icon: ShoppingCart },
   { name: "Housing", href: "/housing", icon: Home },
   { name: "Test Lab", href: "/test", icon: TestTube },
@@ -21,7 +22,9 @@ interface DashboardLayoutProps {
 
 export function DashboardLayout({ children }: DashboardLayoutProps) {
   const pathname = usePathname()
+  const router = useRouter();
 
+  
   return (
     <div className="min-h-screen bg-slate-900">
       {/* Mobile Navigation */}
@@ -98,14 +101,6 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       <div className="lg:pl-64">
         <main className="p-4 lg:p-8 pb-20 lg:pb-8">{children}</main>
       </div>
-
-      {/* Floating Action Button */}
-      <Button
-        size="lg"
-        className="fixed bottom-20 lg:bottom-8 right-4 lg:right-8 bg-emerald-400 hover:bg-emerald-500 text-slate-900 rounded-full w-14 h-14 shadow-lg z-40"
-      >
-        <Plus className="h-6 w-6" />
-      </Button>
     </div>
   )
 }

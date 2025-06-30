@@ -1,7 +1,8 @@
 "use client"
 
 import type React from "react"
-
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { useRouter } from "next/navigation";
 import { useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -13,6 +14,8 @@ import { Separator } from "@/components/ui/separator"
 import { ArrowLeft, Eye, EyeOff, Mail, Lock, Shield, Users, Star, Loader2 } from "lucide-react"
 
 export default function LoginPage() {
+  const supabase = createClientComponentClient();
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [formData, setFormData] = useState({
@@ -21,23 +24,69 @@ export default function LoginPage() {
   })
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
-    // Simulate login process
-    await new Promise((resolve) => setTimeout(resolve, 2000))
-    setIsLoading(false)
-    // Redirect to sample report or dashboard
-    window.location.href = "/sample-report"
-  }
+  e.preventDefault();
+  setIsLoading(true);
+  try {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: formData.email,
+      password: formData.password,
+    });
 
-  const handleSocialLogin = (provider: string) => {
-    // Simulate social login
-    setIsLoading(true)
-    setTimeout(() => {
-      setIsLoading(false)
-      window.location.href = "/sample-report"
-    }, 1500)
+    if (error) throw error;
+
+    localStorage.setItem("token", data.session?.access_token ?? "");
+    const user = data.user;
+
+    if (user) {
+      // Check if profile exists
+      const { data: profile, error: profileError } = await supabase
+        .from("profiles")
+        .select("id")
+        .eq("id", user.id)
+        .single();
+
+      // If not exists, insert
+      if (!profile && !profileError) {
+        await supabase.from("profiles").insert({
+          id: user.id,
+          email: user.email,
+        });
+      }
+
+      // Save session locally
+      localStorage.setItem("token", data.session?.access_token ?? "");
+      localStorage.setItem("user", JSON.stringify(user));
+    }
+
+    // router.push("/dashboard");
+  } catch (err) {
+    console.error("Login error:", err);
+    alert("Invalid credentials or login failed.");
+  } finally {
+    setIsLoading(false);
   }
+};
+
+  const handleSocialLogin = async (provider: "google" | "github") => {
+  setIsLoading(true);
+  try {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider,
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`, // Make sure this exists
+      },
+    });
+    console.log("data: ", data)
+    if (error) throw error;
+    // No need to redirect manually — Supabase does it
+  } catch (err) {
+    console.error("OAuth login error:", err);
+    alert("OAuth login failed.");
+  } finally {
+    setIsLoading(false);
+  }
+};
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 relative overflow-hidden">
