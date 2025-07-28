@@ -5,16 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { User } from "@supabase/supabase-js";
-import {
-  LayoutDashboard,
-  ShoppingCart,
-  Home,
-  Settings,
-  TestTube,
-  Zap,
-  LogOut,
-} from "lucide-react";
+import { LayoutDashboard, Zap, LogOut } from "lucide-react";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useEffect, useState } from "react";
 import Image from "next/image";

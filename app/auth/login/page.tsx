@@ -28,6 +28,7 @@ import {
   Star,
   Loader2,
 } from "lucide-react";
+import toast from "react-hot-toast";
 
 export default function LoginPage() {
   const supabase = createClientComponentClient();
@@ -73,11 +74,12 @@ export default function LoginPage() {
         localStorage.setItem("token", data.session?.access_token ?? "");
         localStorage.setItem("user", JSON.stringify(user));
       }
+      toast.success("Logged in successfully!");
 
       router.push("/dashboard");
     } catch (err) {
       console.error("Login error:", err);
-      alert("Invalid credentials or login failed.");
+      toast.error("Invalid credentials or login failed.");
     } finally {
       setIsLoading(false);
     }
