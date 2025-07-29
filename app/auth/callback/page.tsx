@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import {
   CheckCircle,
   AlertCircle,
@@ -11,9 +10,10 @@ import {
   Database,
   Shield,
 } from "lucide-react";
+import { supabaseBrowser } from "@/utils/supabase";
 
 export default function AuthCallback() {
-  const supabase = createClientComponentClient();
+  const supabase = supabaseBrowser();
   const router = useRouter();
   const [status, setStatus] = useState<"loading" | "success" | "error">(
     "loading"

@@ -1,0 +1,6 @@
+{
+  "typescript.tsdk": "node_modules/**",
+  "typescript.validate.enable": true,
+  "typescript.tsserver.experimental.enableProjectDiagnostics": false,
+  "typescript.tsserver.exclude": ["**/node_modules"]
+}
