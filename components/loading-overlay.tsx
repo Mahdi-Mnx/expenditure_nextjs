@@ -2,7 +2,7 @@
 
 import { fadeInUp } from "@/lib/motionConfig";
 import { motion } from "framer-motion";
-import { TrendingUp, BarChart3 } from "lucide-react";
+import { TrendingUp } from "lucide-react";
 
 export default function LoadingOverlay({
   isVisible = true,
@@ -73,21 +73,6 @@ export default function LoadingOverlay({
             <div className="w-16 h-16 bg-gradient-to-br from-emerald-400 to-blue-400 rounded-xl flex items-center justify-center shadow-lg">
               <TrendingUp className="h-8 w-8 text-slate-900" />
             </div>
-
-            {/* Orbiting Chart Icon */}
-            <motion.div
-              animate={{ rotate: [0, -360] }}
-              transition={{
-                duration: 4,
-                repeat: Number.POSITIVE_INFINITY,
-                ease: "linear",
-              }}
-              className="absolute -top-2 -right-2"
-            >
-              <div className="w-6 h-6 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full flex items-center justify-center">
-                <BarChart3 className="h-3 w-3 text-white" />
-              </div>
-            </motion.div>
           </motion.div>
         </motion.div>
 
@@ -116,7 +101,7 @@ export default function LoadingOverlay({
           transition={{ duration: 0.5, delay: 0.6 }}
           className="text-lg text-slate-300 font-medium"
         >
-          Thanks for joining Your financial overview is loading.
+          Thanks for joining, Your financial overview is loading.
         </motion.p>
 
         {/* Loading Dots */}

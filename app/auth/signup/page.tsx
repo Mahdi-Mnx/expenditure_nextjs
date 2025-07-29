@@ -373,7 +373,7 @@ export default function SignupPage() {
                 <Button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full bg-gradient-to-r from-purple-400 to-emerald-500 hover:from-purple-500 hover:to-emerald-600 text-slate-900 font-semibold py-6 rounded-xl transition-all duration-300 hover:scale-[1.02] shadow-lg shadow-purple-400/25"
+                  className="w-full bg-gradient-to-r from-purple-400 to-emerald-500 hover:from-purple-500 hover:to-emerald-600 text-white font-semibold py-6 rounded-xl transition-all duration-300 hover:scale-[1.02] shadow-lg shadow-purple-400/25"
                 >
                   {isLoading ? (
                     <div className="flex items-center justify-center gap-2">

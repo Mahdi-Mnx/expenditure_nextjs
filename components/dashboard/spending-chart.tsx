@@ -133,6 +133,9 @@ export function SpendingChart() {
       </CardHeader>
       <CardContent className="">
         <div className="h-64">
+          <h1 className="text-center mt-10 text-white font-bold text-xl">
+            AreaChart
+          </h1>
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart
               data={data}
@@ -173,7 +176,9 @@ export function SpendingChart() {
             </AreaChart>
           </ResponsiveContainer>
         </div>
-
+        <h1 className="text-center mt-10 text-white font-bold text-xl">
+          BarChart
+        </h1>
         {/* Additional chart for category breakdown */}
         <div className="h-64 mt-6">
           <ResponsiveContainer width="100%" height="100%">

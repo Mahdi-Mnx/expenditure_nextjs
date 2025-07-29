@@ -269,7 +269,7 @@ export default function LoginPage() {
                 <Button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full bg-gradient-to-r from-emerald-400 to-blue-500 hover:from-emerald-500 hover:to-blue-600 text-slate-900 font-semibold py-6 rounded-xl transition-all duration-300 hover:scale-[1.02] shadow-lg shadow-emerald-400/25"
+                  className="w-full bg-gradient-to-r from-emerald-400 to-blue-500 hover:from-emerald-500 hover:to-blue-600 text-whitefont-semibold py-6 rounded-xl transition-all duration-300 hover:scale-[1.02] shadow-lg shadow-emerald-400/25"
                 >
                   {isLoading ? (
                     <div className="flex items-center justify-center gap-2">
