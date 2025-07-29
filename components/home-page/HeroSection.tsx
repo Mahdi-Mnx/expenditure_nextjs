@@ -42,7 +42,7 @@ export function HeroSection() {
             <Button
               asChild
               size="lg"
-              className="bg-gradient-to-r from-emerald-400 to-emerald-500 hover:from-emerald-500 hover:to-emerald-600 text-slate-900 font-semibold px-10 py-6 text-lg rounded-full shadow-2xl shadow-emerald-400/25 transition-all duration-300 hover:scale-105"
+              className="bg-gradient-to-r from-emerald-400 to-emerald-500 hover:from-emerald-500 hover:to-emerald-600 text-white font-semibold px-10 py-6 text-lg rounded-full shadow-2xl shadow-emerald-400/25 transition-all duration-300 hover:scale-105"
             >
               <Link href="/auth/login">
                 <Calculator className="mr-3 h-6 w-6" />
