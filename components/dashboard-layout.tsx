@@ -5,13 +5,14 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, Zap, LogOut } from "lucide-react";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { LayoutDashboard, Zap, LogOut, User2Icon } from "lucide-react";
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import { supabaseBrowser } from "@/utils/supabase";
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { name: "Prediction", href: "/predict/demographics", icon: Zap },
+  { name: "Prediction", href: "/predict", icon: Zap },
+  { name: "Profile", href: "/profile", icon: User2Icon },
 ];
 
 interface DashboardLayoutProps {
@@ -29,7 +30,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   };
   const pathname = usePathname();
   const router = useRouter();
-  const supabase = createClientComponentClient();
+  const supabase = supabaseBrowser();
   const [profile, setProfile] = useState<{
     full_name: string;
     email: string;
@@ -38,7 +39,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
   useEffect(() => {
     const fetchProfile = async () => {
-      const supabase = createClientComponentClient();
+      const supabase = supabaseBrowser();
       const {
         data: { user },
       } = await supabase.auth.getUser();
@@ -85,7 +86,6 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           })}
         </div>
       </div>
-
       {/* Desktop Sidebar */}
       <div className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-64 lg:flex-col">
         <div className="flex flex-col flex-grow bg-slate-800 border-r border-slate-700">
@@ -117,32 +117,31 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                 );
               })}
             </nav>
-
             <div className="flex-shrink-0 p-4 border-t border-slate-700">
               <div className="flex items-center gap-3 mb-4">
                 <div
-                  className="w-8 h-8 bg-emerald-400 rounded-full flex items-center justify-center"
-                  onClick={() => {
-                    router.push("/profile");
-                  }}
+                  className="w-10 h-10 rounded-full overflow-hidden cursor-pointer border-2 border-emerald-500 hover:scale-105 transition-transform"
+                  onClick={() => router.push("/profile")}
                 >
                   {profile?.image_url ? (
                     <Image
                       src={profile.image_url}
                       alt="Profile"
-                      width={32}
-                      height={32}
-                      className="w-8 h-8 object-cover rounded-full"
+                      width={40}
+                      height={40}
+                      className="object-cover w-full h-full"
                     />
                   ) : (
-                    <span>{getInitials(profile?.full_name || "User")}</span>
+                    <div className="bg-emerald-500 flex items-center justify-center w-full h-full text-white font-bold text-sm">
+                      {getInitials(profile?.full_name || "User")}
+                    </div>
                   )}
                 </div>
-                <div className="flex-col">
-                  <div className="text-sm font-medium text-white">
+                <div className="flex flex-col justify-center">
+                  <div className="text-sm font-semibold text-white">
                     {profile?.full_name || "Guest"}
                   </div>
-                  <div className="text-xs text-slate-400">
+                  <div className="text-xs text-slate-400 truncate max-w-[150px]">
                     {profile?.email || "no-email@example.com"}
                   </div>
                 </div>
@@ -163,8 +162,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           </div>
         </div>
       </div>
-
-      {/* Main Content */}
+      {/*Main Content*/}
       <div className="lg:pl-64">
         <main className="p-4 lg:p-8 pb-20 lg:pb-8">{children}</main>
       </div>

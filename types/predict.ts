@@ -1,44 +1,63 @@
-export interface PredictionInputs {
-  // Basic Info
-  hhsize: number;
-  region_n: number;
-  hh_water_type: number;
-  hh_electricity: number;
-  
-  // Expenditures
-  exp_food: number;
-  exp_nfnd: number;
-  exp_rent: number;
-  
-  // Economic Indicators
-  pce: number;
-  pcer: number;
-  poor: number;
-  foodsec7_07: number;
-  remt9_11: number;
-  
-  // Livestock/Assets
-  liv4_04: number;
-  liv4_12: number;
-  liv4_13: number;
-  liv4_21: number;
-  liv4_22: number;
-  liv4_24: number;
-  liv4_25: number;
-  
-  // Non-Farm Enterprises
-  nfe16_13: number;
-  nfe16_33: number;
-  
-  // Shocks
-  shock10_03: number;
-  shock10_04: number;
-  shock10_07_21: number;
-  shock10_07_23: number;
-  
-  // Consumption Quantities
-  cr15_04quantity: number;
-  cr15_05quantity: number;
-  cr15_06: number;
-  cr15_10: number;
+// types/predict.ts
+export interface FormData {
+  Number_of_Members: number;
+  Region: string;
+  Residence_Type: string;
+  Food_Expenditure: number;
+  NonFood_Expenditure: number;
+  Housing_Expenditure: number;
+  Utilities_Expenditure: number;
+  Transport_Expenditure: number;
+  Spent_on_Food_Drink_Outside: number;
+  General_NonFood_Expenditure: number;
+  Livestock_Byproducts_Value: number;
+  Business_Revenue: number;
+}
+
+export const residenceTypeOptions = [
+  { label: "Urban", value: "Urban" },
+  { label: "Rural", value: "Rural" },
+  { label: "Nomadic", value: "Nomadic" },
+];
+
+export const regionOptions = [
+  { label: "Awdal", value: "Awdal" },
+  { label: "Bakool", value: "Bakool" },
+  { label: "Banadir", value: "Banadir" },
+  { label: "Bari", value: "Bari" },
+  { label: "Bay", value: "Bay" },
+  { label: "Galgaduud", value: "Galgaduud" },
+  { label: "Gedo", value: "Gedo" },
+  { label: "Hiraan", value: "Hiraan" },
+  { label: "Lower Juba", value: "Lower Juba" },
+  { label: "Lower Shabelle", value: "Lower Shabelle" },
+  { label: "Waqooyi Galbeed", value: "Waqooyi Galbeed" },
+  { label: "Middle Shabelle", value: "Middle Shabelle" },
+  { label: "Mudug", value: "Mudug" },
+  { label: "Nugaal", value: "Nugaal" },
+  { label: "Sanaag", value: "Sanaag" },
+  { label: "Sool", value: "Sool" },
+  { label: "Togdheer", value: "Togdheer" },
+];
+
+export interface FieldOption {
+  label: string;
+  value: string | number;
+}
+
+export interface FormField {
+  key: keyof FormData;
+  label: string;
+  type: "number" | "currency" | "select";
+  min?: number;
+  max?: number;
+  icon?: React.ReactElement;
+  options?: FieldOption[];
+  step?: number;
+}
+
+export interface FieldGroup {
+  title: string;
+  icon: React.ReactElement;
+  fields: FormField[];
 }
