@@ -11,6 +11,7 @@ import {
   Shield,
 } from "lucide-react";
 import { supabaseBrowser } from "@/utils/supabase";
+import toast from "react-hot-toast";
 
 export default function AuthCallback() {
   const supabase = supabaseBrowser();
@@ -105,6 +106,7 @@ export default function AuthCallback() {
         await new Promise((resolve) => setTimeout(resolve, 1000));
 
         router.push("/dashboard");
+        toast.success("Logged in successfully!");
       } catch (error: any) {
         console.error("Auth callback error:", error);
         setStatus("error");

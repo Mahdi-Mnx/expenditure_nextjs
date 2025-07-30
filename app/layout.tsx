@@ -10,6 +10,7 @@ export const metadata: Metadata = {
   title: "Household Financial Predictor – AI-Powered Spending Insights",
   description:
     "Predict your household's financial future with comprehensive AI-powered insights and personalized recommendations",
+  icons: "/Logo.png",
 };
 
 export default function RootLayout({

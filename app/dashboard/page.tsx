@@ -263,18 +263,9 @@ export default function DashboardPage() {
                 className="flex items-center space-x-4"
                 style={{ animation: "fadeInRight 0.8s ease-out 0.2s both" }}
               >
-                <div className="flex items-center space-x-3 px-4 py-2 bg-slate-800/30 backdrop-blur-xl rounded-full border border-slate-700/30">
-                  <div className="relative">
-                    <div className="h-3 w-3 bg-emerald-500 rounded-full animate-ping"></div>
-                    <div className="absolute inset-0 h-3 w-3 bg-emerald-500 rounded-full"></div>
-                  </div>
-                  <span className="text-sm text-slate-300 font-medium">
-                    Live
-                  </span>
-                </div>
                 <div className="text-right">
-                  <div className="text-sm text-slate-400">Last updated</div>
-                  <div className="text-xs text-slate-500">Just now</div>
+                  <div className="text-sm text-slate-200">Last updated</div>
+                  <div className="text-xs text-slate-400">Just now</div>
                 </div>
               </div>
             </div>
