@@ -74,9 +74,8 @@ export default function LoginPage() {
         localStorage.setItem("token", data.session?.access_token ?? "");
         localStorage.setItem("user", JSON.stringify(user));
       }
-      toast.success("Logged in successfully!");
-
       router.push("/dashboard");
+      toast.success("Logged in successfully!");
     } catch (err) {
       console.error("Login error:", err);
       toast.error("Invalid credentials or login failed.");
@@ -269,7 +268,7 @@ export default function LoginPage() {
                 <Button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full bg-gradient-to-r from-emerald-400 to-blue-500 hover:from-emerald-500 hover:to-blue-600 text-whitefont-semibold py-6 rounded-xl transition-all duration-300 hover:scale-[1.02] shadow-lg shadow-emerald-400/25"
+                  className="w-full bg-gradient-to-r from-emerald-400 to-blue-500 hover:from-emerald-500 hover:to-blue-600 text-white font-semibold py-6 rounded-xl transition-all duration-300 hover:scale-[1.02] shadow-lg shadow-emerald-400/25"
                 >
                   {isLoading ? (
                     <div className="flex items-center justify-center gap-2">

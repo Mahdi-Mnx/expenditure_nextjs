@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { DashboardLayout } from "@/components/dashboard-layout";
-import { RealtimeChannel } from "@supabase/supabase-js";
 import { supabaseBrowser } from "@/utils/supabase";
 
 interface PredictionData {
@@ -68,13 +67,13 @@ export default function PredictScreen() {
       } = await supabase.auth.getUser();
       if (authError || !user) throw new Error("Not authenticated");
 
-      const { data, error: fetchError } = await supabase
+      const { data, error } = await supabase
         .from("predictions")
         .select("*")
         .eq("user_id", user.id)
         .order("created_at", { ascending: false });
 
-      if (fetchError) throw fetchError;
+      if (error) throw error;
       setPredictions(data || []);
     } catch (err: any) {
       console.error(err);
@@ -85,70 +84,23 @@ export default function PredictScreen() {
   };
 
   useEffect(() => {
-    let channel: RealtimeChannel;
-
-    const setupChannel = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      channel = supabase
-        .channel("predictions_changes")
-        .on(
-          "postgres_changes",
-          {
-            event: "*",
-            schema: "public",
-            table: "predictions",
-            filter: `user_id=eq.${user?.id}`,
-          },
-          (payload) => {
-            if (payload.eventType === "INSERT") {
-              setPredictions((prev) => [
-                payload.new as PredictionData,
-                ...prev,
-              ]);
-            } else if (payload.eventType === "UPDATE") {
-              setPredictions((prev) =>
-                prev.map((p) =>
-                  p.id === payload.new.id ? (payload.new as PredictionData) : p
-                )
-              );
-            } else if (payload.eventType === "DELETE") {
-              setPredictions((prev) =>
-                prev.filter((p) => p.id !== payload.old.id)
-              );
-            }
-          }
-        )
-        .subscribe();
-
-      return () => {
-        if (channel) supabase.removeChannel(channel);
-      };
-    };
-
-    setupChannel();
-  }, [supabase]);
-
-  useEffect(() => {
     loadUserPredictions();
   }, []);
 
-  const handleDeletePrediction = (id: string) => {
+  const handleDeletePrediction = async (id: string) => {
     if (confirm("Are you sure you want to delete this prediction?")) {
-      (async () => {
+      try {
         const { error } = await supabase
           .from("predictions")
           .delete()
           .eq("id", id);
 
-        if (error) {
-          return alert("Error deleting: " + error.message);
-        }
+        if (error) throw error;
 
         setPredictions((prev) => prev.filter((p) => p.id !== id));
-      })();
+      } catch (err: any) {
+        alert("Error deleting: " + err.message);
+      }
     }
   };
 

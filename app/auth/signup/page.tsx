@@ -96,7 +96,7 @@ export default function SignupPage() {
 
       if (error) throw error;
 
-      toast.success("Account created! Check your email.");
+      toast.success("Account created!");
       router.push("/auth/login");
     } catch (err: any) {
       console.error("Signup error:", err);

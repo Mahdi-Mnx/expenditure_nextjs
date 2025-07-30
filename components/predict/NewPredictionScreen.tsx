@@ -200,7 +200,9 @@ export default function NewPredictionScreen() {
   };
 
   const handleSubmit = async () => {
+    if (loading) return;
     setLoading(true);
+
     try {
       const res = await predictExpenditure(form);
       const predictedExp = res.predicted_expenditure;
@@ -212,7 +214,7 @@ export default function NewPredictionScreen() {
       if (authError || !user) throw new Error("Not authenticated");
 
       if (isEditMode && predictionId) {
-        const { error: updateError } = await supabase
+        const { data, error } = await supabase
           .from("predictions")
           .update({
             input_data: form,
@@ -220,28 +222,13 @@ export default function NewPredictionScreen() {
             model_used: res.model || "RF",
             updated_at: new Date().toISOString(),
           })
-          .eq("id", predictionId);
+          .eq("id", predictionId)
+          .select();
 
-        if (updateError) throw updateError;
-      } else {
-        const { error: insertError } = await supabase
-          .from("predictions")
-          .insert({
-            user_id: user.id,
-            input_data: form,
-            predicted_exp: predictedExp,
-            model_used: res.model || "RF",
-            created_at: new Date().toISOString(),
-          });
-
-        if (insertError) throw insertError;
+        if (error) throw error;
       }
 
       setResult(predictedExp);
-
-      setTimeout(() => {
-        router.push("/predict");
-      }, 1500);
     } catch (err: any) {
       console.error(err);
       alert(err.message);
