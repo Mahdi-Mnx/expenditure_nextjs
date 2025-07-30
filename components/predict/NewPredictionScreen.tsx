@@ -421,7 +421,7 @@ export default function NewPredictionScreen() {
                 Prediction Complete!
               </h1>
               <p className="text-slate-400 text-lg">
-                Your AI-powered expenditure forecast is ready
+                Your ML-powered expenditure forecast is ready
               </p>
             </div>
 
@@ -566,7 +566,7 @@ export default function NewPredictionScreen() {
                 <Sparkles className="w-8 h-8 text-white" />
               </div>
               <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-emerald-300 bg-clip-text text-transparent mb-2">
-                AI Expenditure Prediction
+                ML Expenditure Prediction
               </h1>
               <p className="text-slate-400 text-lg">
                 Get accurate predictions powered by machine learning

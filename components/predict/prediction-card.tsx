@@ -159,7 +159,7 @@ export function PredictionCard({
         <div className="flex items-center justify-between">
           <div className="flex items-center text-slate-400 text-xs">
             <BarChart3 className="w-3 h-3 mr-1" />
-            <span>Model: {prediction.model_used || "AI-ML"}</span>
+            <span>Model: {prediction.model_used || "ML"}</span>
           </div>
           <div className="flex items-center text-emerald-400 text-xs">
             <TrendingUp className="w-3 h-3 mr-1" />

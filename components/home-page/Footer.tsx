@@ -15,7 +15,7 @@ export function Footer() {
               <span className="text-xl font-bold text-white">FinPredict</span>
             </div>
             <p className="text-slate-400 mb-6 mt-5 max-w-md">
-              Empowering households with comprehensive AI-driven financial
+              Empowering households with comprehensive ML-driven financial
               insights and predictions for better spending decisions and
               financial planning.
             </p>

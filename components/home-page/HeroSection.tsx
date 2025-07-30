@@ -22,7 +22,7 @@ export function HeroSection() {
       <div className="relative z-10 container mx-auto px-4 text-center">
         <div className="max-w-5xl mx-auto">
           <Badge className="mb-6 bg-emerald-400/20 text-emerald-300 border-emerald-400/30 px-4 py-2 text-sm">
-            ✨ AI-Powered Financial Intelligence
+            ✨ ML-Powered Financial Intelligence
           </Badge>
 
           <h1 className="text-6xl md:text-8xl font-bold text-white mb-8 leading-tight">
@@ -35,7 +35,7 @@ export function HeroSection() {
 
           <p className="text-xl md:text-2xl text-slate-300 mb-12 leading-relaxed max-w-4xl mx-auto font-light">
             Transform your household data into actionable insights with our
-            comprehensive AI-powered platform.
+            comprehensive ML-powered platform.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-6 justify-center mb-16">

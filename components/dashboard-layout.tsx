@@ -30,7 +30,7 @@ const navigation = [
     name: "Prediction",
     href: "/predict",
     icon: Zap,
-    description: "AI Predictions",
+    description: "ML Predictions",
     gradient: "from-emerald-500 to-emerald-600",
   },
   {

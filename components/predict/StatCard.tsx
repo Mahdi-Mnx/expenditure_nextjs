@@ -1,13 +1,13 @@
 "use client";
 
+import { StatCardColor } from "@/types/predict";
+import { colorClasses } from "@/utils/animation";
 import { Activity } from "lucide-react";
 import { ReactNode } from "react";
 
-type StatCardColor = "blue" | "emerald" | "purple";
-
 interface StatCardProps {
   icon: ReactNode;
-  value: string | number;
+  value: ReactNode;
   label: string;
   description: string;
   color: StatCardColor;
@@ -22,27 +22,6 @@ export function StatCard({
   color,
   delay,
 }: StatCardProps) {
-  const colorClasses = {
-    blue: {
-      bg: "from-blue-500/20 to-cyan-500/20",
-      border: "hover:border-blue-500/30",
-      shadow: "hover:shadow-blue-500/10",
-      iconColor: "text-blue-400",
-    },
-    emerald: {
-      bg: "from-emerald-500/20 to-teal-500/20",
-      border: "hover:border-emerald-500/30",
-      shadow: "hover:shadow-emerald-500/10",
-      iconColor: "text-emerald-400",
-    },
-    purple: {
-      bg: "from-purple-500/20 to-pink-500/20",
-      border: "hover:border-purple-500/30",
-      shadow: "hover:shadow-purple-500/10",
-      iconColor: "text-purple-400",
-    },
-  };
-
   return (
     <div
       className={`group bg-gradient-to-br from-slate-800/80 to-slate-900/80 backdrop-blur-xl border border-slate-700/50 rounded-3xl p-6 ${colorClasses[color].border} transition-all duration-300 hover:scale-105 hover:shadow-lg ${colorClasses[color].shadow}`}

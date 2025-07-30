@@ -1,7 +1,7 @@
 "use client";
-
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
 import { DashboardLayout } from "@/components/dashboard-layout";
 import { supabaseBrowser } from "@/utils/supabase";
 import { PredictionsList } from "@/components/predict/PredictionsList";
@@ -10,8 +10,15 @@ import { Header } from "@/components/predict/Header";
 import { EmptyState } from "@/components/predict/EmptyState";
 import { BackgroundElements } from "@/components/predict/BackgroundElements";
 import { LoadingPredictionsScreen } from "@/components/predict/LoadingPredictionsScreen";
-import { LoadingScreen } from "@/components/predict/LoadingScreen";
-import { PredictionData } from "@/types/predict";
+import type { PredictionData } from "@/types/predict";
+import {
+  backgroundVariants,
+  itemVariants,
+  loadingToContentVariants,
+  pageEntranceVariants,
+} from "@/utils/animation";
+
+// Enhanced animation variants for reload experience
 
 export default function PredictScreen() {
   const router = useRouter();
@@ -111,40 +118,96 @@ export default function PredictScreen() {
   );
   const totalPredictions = predictions.length;
 
-  if (!mounted) return <LoadingScreen />;
-  if (loading) return <LoadingPredictionsScreen />;
+  if (!mounted) return <LoadingPredictionsScreen />;
 
   return (
     <DashboardLayout>
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
-        <BackgroundElements mounted={mounted} />
+      <AnimatePresence mode="wait">
+        {loading ? (
+          <motion.div
+            key="loading"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 1.05, y: -20 }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
+          >
+            <LoadingPredictionsScreen />
+          </motion.div>
+        ) : (
+          <motion.div
+            key="content"
+            className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden"
+            variants={pageEntranceVariants}
+            initial="hidden"
+            animate="visible"
+          >
+            <motion.div variants={backgroundVariants}>
+              <BackgroundElements mounted={mounted} />
+            </motion.div>
 
-        <div className="relative z-10 p-6 max-w-7xl mx-auto">
-          <Header
-            totalPredictions={totalPredictions}
-            onAddNew={handleAddNewPrediction}
-          />
+            <motion.div
+              className="relative z-10 p-6 max-w-7xl mx-auto"
+              variants={loadingToContentVariants}
+            >
+              <motion.div variants={itemVariants}>
+                <Header
+                  totalPredictions={totalPredictions}
+                  onAddNew={handleAddNewPrediction}
+                />
+              </motion.div>
 
-          <StatsOverview
-            totalPredictions={totalPredictions}
-            avgPrediction={avgPrediction}
-            highestPrediction={highestPrediction}
-            formatCurrency={formatCurrency}
-          />
+              <motion.div variants={itemVariants}>
+                <StatsOverview
+                  totalPredictions={totalPredictions}
+                  avgPrediction={avgPrediction}
+                  highestPrediction={highestPrediction}
+                  formatCurrency={formatCurrency}
+                />
+              </motion.div>
 
-          {predictions.length === 0 ? (
-            <EmptyState onAddNew={handleAddNewPrediction} />
-          ) : (
-            <PredictionsList
-              predictions={predictions}
-              formatDate={formatDate}
-              formatCurrency={formatCurrency}
-              onEdit={handleEditPrediction}
-              onDelete={handleDeletePrediction}
-            />
-          )}
-        </div>
-      </div>
+              <AnimatePresence mode="wait">
+                {predictions.length === 0 ? (
+                  <motion.div
+                    key="empty"
+                    variants={itemVariants}
+                    initial="hidden"
+                    animate="visible"
+                    exit={{
+                      opacity: 0,
+                      scale: 0.9,
+                      y: 20,
+                      transition: { duration: 0.3 },
+                    }}
+                  >
+                    <EmptyState onAddNew={handleAddNewPrediction} />
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="predictions"
+                    variants={itemVariants}
+                    initial="hidden"
+                    animate="visible"
+                    exit={{
+                      opacity: 0,
+                      scale: 0.9,
+                      y: 20,
+                      transition: { duration: 0.3 },
+                    }}
+                  >
+                    <PredictionsList
+                      predictions={predictions}
+                      formatDate={formatDate}
+                      formatCurrency={formatCurrency}
+                      onEdit={handleEditPrediction}
+                      onDelete={handleDeletePrediction}
+                    />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </DashboardLayout>
   );
 }

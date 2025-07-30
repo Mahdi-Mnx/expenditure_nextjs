@@ -85,3 +85,5 @@ export interface FieldGroup {
   gradient?: string;
   fields: FormField[];
 }
+
+export type StatCardColor = "blue" | "emerald" | "purple";
