@@ -17,8 +17,19 @@ import {
   loadingToContentVariants,
   pageEntranceVariants,
 } from "@/utils/animation";
-
-// Enhanced animation variants for reload experience
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import { AlertTriangle, Trash2 } from "lucide-react";
 
 export default function PredictScreen() {
   const router = useRouter();
@@ -26,7 +37,10 @@ export default function PredictScreen() {
   const [loading, setLoading] = useState(true);
   const [mounted, setMounted] = useState(false);
   const supabase = supabaseBrowser();
-
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [predictionToDelete, setPredictionToDelete] = useState<string | null>(
+    null
+  );
   useEffect(() => {
     setMounted(true);
     loadUserPredictions();
@@ -81,21 +95,28 @@ export default function PredictScreen() {
     loadUserPredictions();
   }, []);
 
-  const handleDeletePrediction = async (id: string) => {
-    if (confirm("Are you sure you want to delete this prediction?")) {
-      try {
-        const { error } = await supabase
-          .from("predictions")
-          .delete()
-          .eq("id", id);
-        if (error) throw error;
-        setPredictions((prev) => prev.filter((p) => p.id !== id));
-      } catch (err: any) {
-        alert("Error deleting: " + err.message);
-      }
-    }
+  const handleDeleteClick = (id: string) => {
+    setPredictionToDelete(id);
+    setDeleteDialogOpen(true);
   };
 
+  const handleDeletePrediction = async () => {
+    if (!predictionToDelete) return;
+
+    try {
+      const { error } = await supabase
+        .from("predictions")
+        .delete()
+        .eq("id", predictionToDelete);
+      if (error) throw error;
+      setPredictions((prev) => prev.filter((p) => p.id !== predictionToDelete));
+    } catch (err: any) {
+      alert("Error deleting: " + err.message);
+    } finally {
+      setDeleteDialogOpen(false);
+      setPredictionToDelete(null);
+    }
+  };
   const handleEditPrediction = (prediction: PredictionData) => {
     router.push(
       `/predict/new?mode=edit&predictionId=${
@@ -199,7 +220,7 @@ export default function PredictScreen() {
                       formatDate={formatDate}
                       formatCurrency={formatCurrency}
                       onEdit={handleEditPrediction}
-                      onDelete={handleDeletePrediction}
+                      onDelete={handleDeleteClick}
                     />
                   </motion.div>
                 )}
@@ -208,6 +229,43 @@ export default function PredictScreen() {
           </motion.div>
         )}
       </AnimatePresence>
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent className="max-w-md border-0 bg-gradient-to-br from-emerald-400 to-emerald-600  ">
+          <AlertDialogHeader className="space-y-4 text-center">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-red-100 via-red-50 to-orange-50 ring-8 ring-red-50/50">
+              <AlertTriangle className="h-8 w-8 text-red-600" />
+            </div>
+            <AlertDialogTitle className="text-xl font-semibold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">
+              Delete Prediction
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-white leading-relaxed">
+              This action cannot be undone. This will permanently remove this
+              prediction from your account and all associated data will be lost.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+
+          <AlertDialogFooter className="flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-2">
+            <AlertDialogCancel asChild>
+              <Button
+                variant="outline"
+                className="w-full border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300 transition-all duration-200"
+              >
+                Cancel
+              </Button>
+            </AlertDialogCancel>
+
+            <AlertDialogAction asChild>
+              <Button
+                onClick={handleDeletePrediction}
+                className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white shadow-lg hover:shadow-xl transition-all duration-200 gap-2 font-medium"
+              >
+                <Trash2 className="w-4 h-4" />
+                Delete Prediction
+              </Button>
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </DashboardLayout>
   );
 }
