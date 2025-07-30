@@ -19,7 +19,7 @@ import {
   Activity,
   BarChart2,
 } from "lucide-react";
-import { predictExpenditure } from "@/lib/api";
+import { predictExpenditure, updatePrediction } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -198,37 +198,25 @@ export default function NewPredictionScreen() {
       setCurrentStep(currentStep - 1);
     }
   };
-
   const handleSubmit = async () => {
     if (loading) return;
     setLoading(true);
 
     try {
-      const res = await predictExpenditure(form);
-      const predictedExp = res.predicted_expenditure;
-
-      const {
-        data: { user },
-        error: authError,
-      } = await supabase.auth.getUser();
-      if (authError || !user) throw new Error("Not authenticated");
+      let res;
 
       if (isEditMode && predictionId) {
-        const { data, error } = await supabase
-          .from("predictions")
-          .update({
-            input_data: form,
-            predicted_exp: predictedExp,
-            model_used: res.model || "RF",
-            updated_at: new Date().toISOString(),
-          })
-          .eq("id", predictionId)
-          .select();
+        res = await updatePrediction(predictionId, {
+          input_data: form,
+          updated_at: new Date().toISOString(),
+        });
 
-        if (error) throw error;
+        router.push("/predict");
+        return;
       }
 
-      setResult(predictedExp);
+      res = await predictExpenditure(form);
+      setResult(res.predicted_expenditure || res.predicted_exp);
     } catch (err: any) {
       console.error(err);
       alert(err.message);

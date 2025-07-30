@@ -6,9 +6,15 @@ const nextConfig = {
   },
   serverExternalPackages: ["@supabase/supabase-js"],
   images: {
-    domains: [
-      "gfbgdcznzcegvutlncuv.supabase.co", // for Supabase Storage
-      "lh3.googleusercontent.com", // for Google profile pictures
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "gfbgdcznzcegvutlncuv.supabase.co",
+      },
+      {
+        protocol: "https",
+        hostname: "lh3.googleusercontent.com",
+      },
     ],
   },
 };
