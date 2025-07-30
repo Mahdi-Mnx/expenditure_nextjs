@@ -14,6 +14,28 @@ export interface FormData {
   Business_Revenue: number;
 }
 
+export interface PredictionData {
+  id: string;
+  user_id: string;
+  input_data: {
+    Region: string;
+    Residence_Type: string;
+    Business_Revenue: number;
+    Food_Expenditure: number;
+    Number_of_Members: number;
+    Housing_Expenditure: number;
+    NonFood_Expenditure: number;
+    Transport_Expenditure: number;
+    Utilities_Expenditure: number;
+    Livestock_Byproducts_Value: number;
+    General_NonFood_Expenditure: number;
+    Spent_on_Food_Drink_Outside: number;
+  };
+  predicted_exp: number;
+  model_used: string;
+  created_at: string;
+}
+
 export const residenceTypeOptions = [
   { label: "Urban", value: "Urban" },
   { label: "Rural", value: "Rural" },
@@ -59,5 +81,7 @@ export interface FormField {
 export interface FieldGroup {
   title: string;
   icon: React.ReactElement;
+  description?: string;
+  gradient?: string;
   fields: FormField[];
 }

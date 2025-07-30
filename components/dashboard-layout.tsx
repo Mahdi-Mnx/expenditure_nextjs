@@ -401,7 +401,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
       {/* Main Content */}
       <div className="lg:pl-80">
-        <main className="relative z-10 p-4 lg:p-8 pt-20 lg:pt-8 pb-20 lg:pb-8 bg-gradient-to-br from-slate-900 to-slate-950 shadow-inner-lg min-h-screen">
+        <main className="relative z-10 bg-gradient-to-br from-slate-900 to-slate-950 shadow-inner-lg min-h-screen">
           {children}
         </main>
       </div>
