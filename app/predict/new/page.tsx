@@ -1,4 +1,4 @@
-import React, { Suspense } from "react";
+import { Suspense } from "react";
 import NewPredictionScreen from "@/components/predict/NewPredictionScreen";
 
 export default function NewPredictionPage() {

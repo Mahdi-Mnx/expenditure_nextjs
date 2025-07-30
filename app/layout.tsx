@@ -7,9 +7,9 @@ import { Toaster } from "react-hot-toast";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Household Financial Predictor – AI-Powered Spending Insights",
+  title: "Household Financial Predictor – ML-Powered Spending Insights",
   description:
-    "Predict your household's financial future with comprehensive AI-powered insights and personalized recommendations",
+    "Predict your household's financial future with comprehensive ML-powered insights and personalized recommendations",
   icons: "/Logo.png",
 };
 

@@ -143,7 +143,7 @@ export default function LoginPage() {
                 </CardDescription>
               </div>
               <Badge className="bg-emerald-400/20 text-emerald-300 border-emerald-400/30">
-                ✨ AI-Powered Financial Intelligence
+                ✨ ML-Powered Financial Intelligence
               </Badge>
             </CardHeader>
 

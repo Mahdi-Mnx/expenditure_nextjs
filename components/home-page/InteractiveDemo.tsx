@@ -96,7 +96,7 @@ export function InteractiveDemo() {
                 <Zap className="h-8 w-8 text-slate-900" />
               </div>
               <h3 className="text-xl font-semibold text-white mb-4">
-                AI-Powered Insights
+                ML-Powered Insights
               </h3>
               <p className="text-slate-300 leading-relaxed mb-4">
                 Get instant predictions with confidence scores, risk
