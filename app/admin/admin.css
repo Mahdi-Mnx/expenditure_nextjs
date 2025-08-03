@@ -1,0 +1,420 @@
+/* Admin Dashboard Styles */
+.admin-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, rgb(15 23 42) 0%, rgb(2 6 23) 100%);
+  position: relative;
+}
+
+/* Header */
+.admin-header {
+  padding: 2rem 1.5rem;
+  border-bottom: 1px solid rgba(51 65 85 / 0.3);
+  background: linear-gradient(
+    135deg,
+    rgba(30 58 138 / 0.05) 0%,
+    rgba(16 185 129 / 0.05) 100%
+  );
+  backdrop-filter: blur(10px);
+}
+
+.admin-header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1400px;
+  margin: 0 auto;
+  animation: slideInDown 0.6s ease-out;
+}
+
+.admin-header-text {
+  flex: 1;
+}
+
+.admin-title {
+  display: flex;
+  align-items: center;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 0.5rem;
+  animation: fadeInUp 0.8s ease-out;
+}
+
+.admin-title-icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  margin-right: 1rem;
+  color: rgb(30 58 138);
+  animation: rotateIn 1s ease-out;
+}
+
+.admin-subtitle {
+  color: rgb(148 163 184);
+  font-size: 1.125rem;
+  animation: fadeInUp 0.8s ease-out 0.2s both;
+}
+
+/* Stats Section */
+.admin-stats {
+  padding: 2rem 1.5rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.admin-stat-card {
+  background: rgba(30 41 59 / 0.6);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(51 65 85 / 0.3);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  animation: fadeInUp 0.8s ease-out;
+}
+
+.admin-stat-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(99 102 241 / 0.5),
+    transparent
+  );
+  animation: shimmer 2s ease-in-out infinite;
+}
+
+.admin-stat-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(99 102 241 / 0.4);
+  box-shadow: 0 10px 30px rgba(0 0 0 / 0.2);
+}
+
+.stat-card-1 {
+  animation-delay: 0.1s;
+}
+.stat-card-2 {
+  animation-delay: 0.2s;
+}
+.stat-card-3 {
+  animation-delay: 0.3s;
+}
+.stat-card-4 {
+  animation-delay: 0.4s;
+}
+
+.admin-stat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.admin-stat-icon-container {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.stat-icon-blue {
+  background: linear-gradient(
+    135deg,
+    rgba(59 130 246 / 0.2) 0%,
+    rgba(99 102 241 / 0.2) 100%
+  );
+}
+
+.stat-icon-emerald {
+  background: linear-gradient(
+    135deg,
+    rgba(16 185 129 / 0.2) 0%,
+    rgba(5 150 105 / 0.2) 100%
+  );
+}
+
+.stat-icon-violet {
+  background: linear-gradient(
+    135deg,
+    rgba(139 92 246 / 0.2) 0%,
+    rgba(124 58 237 / 0.2) 100%
+  );
+}
+
+.stat-icon-orange {
+  background: linear-gradient(
+    135deg,
+    rgba(249 115 22 / 0.2) 0%,
+    rgba(234 88 12 / 0.2) 100%
+  );
+}
+
+.admin-stat-card:hover .admin-stat-icon-container {
+  transform: scale(1.1);
+}
+
+.admin-stat-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: white;
+}
+
+.admin-stat-label {
+  color: rgb(148 163 184);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.admin-stat-value {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 0.5rem;
+  animation: countUp 1s ease-out;
+}
+
+.admin-stat-trend {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: rgb(148 163 184);
+  font-size: 0.875rem;
+}
+
+.admin-stat-trend-icon {
+  width: 1rem;
+  height: 1rem;
+  color: rgb(34 197 94);
+}
+
+/* Content Section */
+.admin-content {
+  padding: 0 1.5rem 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  animation: fadeInUp 0.8s ease-out;
+}
+
+/* Cards */
+.admin-card {
+  background: rgba(30 41 59 / 0.6);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(51 65 85 / 0.3);
+  border-radius: 1rem;
+  transition: all 0.3s ease;
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.admin-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(99 102 241 / 0.4);
+  box-shadow: 0 8px 25px rgba(0 0 0 / 0.15);
+}
+
+.admin-card-header {
+  color: white;
+}
+
+.admin-card-title {
+  color: white;
+  font-weight: 600;
+}
+
+.admin-card-description {
+  color: rgb(148 163 184);
+}
+
+/* Recent Predictions */
+.admin-prediction-item {
+  background: rgba(51 65 85 / 0.3);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  transition: all 0.3s ease;
+  animation: fadeInUp 0.4s ease-out;
+}
+
+.admin-prediction-item:hover {
+  background: rgba(51 65 85 / 0.5);
+  transform: translateX(4px);
+}
+
+.admin-prediction-user {
+  color: white;
+  font-weight: 500;
+}
+
+.admin-prediction-details {
+  color: rgb(148 163 184);
+}
+
+.admin-prediction-amount {
+  color: white;
+  font-weight: 600;
+}
+
+.admin-prediction-date {
+  color: rgb(148 163 184);
+}
+
+/* Region Stats */
+.admin-region-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  background: rgba(51 65 85 / 0.3);
+  border-radius: 0.75rem;
+  transition: all 0.3s ease;
+  animation: fadeInUp 0.4s ease-out;
+}
+
+.admin-region-item:hover {
+  background: rgba(51 65 85 / 0.5);
+  transform: translateX(4px);
+}
+
+.admin-region-rank {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  color: white;
+  font-size: 0.875rem;
+}
+
+.admin-region-name {
+  color: white;
+  font-weight: 500;
+}
+
+.admin-region-count {
+  color: white;
+  font-weight: 600;
+}
+
+/* Category Cards */
+.admin-category-card {
+  padding: 1.5rem;
+  border-radius: 1rem;
+  transition: all 0.3s ease;
+  animation: fadeInUp 0.4s ease-out;
+}
+
+.admin-category-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0 0 0 / 0.1);
+}
+
+.admin-category-label {
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.admin-category-amount {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+/* Animations */
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes rotateIn {
+  from {
+    opacity: 0;
+    transform: rotate(-180deg);
+  }
+  to {
+    opacity: 1;
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes countUp {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .admin-stats {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-header {
+    padding: 1.5rem 1rem;
+  }
+
+  .admin-title {
+    font-size: 2rem;
+  }
+
+  .admin-stats {
+    padding: 1.5rem 1rem;
+    grid-template-columns: 1fr;
+  }
+
+  .admin-content {
+    padding: 0 1rem 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-title {
+    font-size: 1.75rem;
+  }
+
+  .admin-stat-value {
+    font-size: 2rem;
+  }
+}
