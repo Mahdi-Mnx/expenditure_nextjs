@@ -14,7 +14,11 @@ interface SummaryStats {
   thisMonthPredicted: number;
 }
 
-export function SummaryCards({ stats }: { stats: SummaryStats }) {
+export function SummaryCards({
+  stats,
+}: {
+  stats: SummaryStats & { predictionCount?: number };
+}) {
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
@@ -27,7 +31,8 @@ export function SummaryCards({ stats }: { stats: SummaryStats }) {
   const summaryData = [
     {
       title: "Total Predicted",
-      value: formatCurrency(stats.totalPredicted),
+      //value: formatCurrency(stats.totalPredicted),
+      value: `${stats.predictionCount || 0} `,
       change: "+12%",
       changeType: "positive" as const,
       icon: DollarSign,
@@ -35,12 +40,12 @@ export function SummaryCards({ stats }: { stats: SummaryStats }) {
       gradient: "from-blue-500 to-blue-600",
     },
     {
-      title: "This Month",
+      title: "This Year",
       value: formatCurrency(stats.thisMonthPredicted),
       change: "+8%",
       changeType: "positive" as const,
       icon: TrendingUp,
-      description: "Current month predictions",
+      description: "Current Yearly predictions",
       gradient: "from-emerald-500 to-emerald-600",
     },
     {
@@ -49,7 +54,7 @@ export function SummaryCards({ stats }: { stats: SummaryStats }) {
       change: "On track",
       changeType: "neutral" as const,
       icon: Target,
-      description: "Average monthly spending",
+      description: "Average Yearly spending",
       gradient: "from-purple-500 to-purple-600",
     },
     {

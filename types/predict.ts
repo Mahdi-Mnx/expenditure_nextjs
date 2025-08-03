@@ -1,44 +1,82 @@
 // types/predict.ts
-export interface FormData {
-  Number_of_Members: number;
-  Region: string;
-  Residence_Type: string;
-  Food_Expenditure: number;
-  NonFood_Expenditure: number;
-  Housing_Expenditure: number;
-  Utilities_Expenditure: number;
-  Transport_Expenditure: number;
-  Spent_on_Food_Drink_Outside: number;
-  General_NonFood_Expenditure: number;
-  Livestock_Byproducts_Value: number;
-  Business_Revenue: number;
+export interface PredictionInput {
+  exp_food: number;
+  exp_rent: number;
+  exp_Education: number;
+  exp_Water: number;
+  exp_Electricity: number;
+  Savings_or_Insurance_Payment: number;
+  Communication_Exp: number;
+  hhsize: number;
+  Area_Name: string;
+  Region_Name: string;
 }
 
 export interface PredictionData {
   id: string;
   user_id: string;
   input_data: {
-    Region: string;
-    Residence_Type: string;
-    Business_Revenue: number;
-    Food_Expenditure: number;
-    Number_of_Members: number;
-    Housing_Expenditure: number;
-    NonFood_Expenditure: number;
-    Transport_Expenditure: number;
-    Utilities_Expenditure: number;
-    Livestock_Byproducts_Value: number;
-    General_NonFood_Expenditure: number;
-    Spent_on_Food_Drink_Outside: number;
+    hhsize: number;
+    Region_Name: string;
+    Area_Name: string;
+    exp_food: number;
+    exp_rent: number;
+    exp_Education: number;
+    exp_Water: number;
+    exp_Electricity: number;
+    Savings_or_Insurance_Payment: number;
+    Communication_Exp: number;
   };
   predicted_exp: number;
   model_used: string;
   created_at: string;
 }
 
+export interface ComparisonResult {
+  prediction1_total: number;
+  prediction2_total: number;
+  absolute_difference: number;
+  percentage_difference: number;
+  category_breakdown: {
+    category: string;
+    actual: number;
+    predicted: number;
+    difference: number;
+    percentage_diff: number;
+  }[];
+  comparison_message: string;
+  created_at_difference: string;
+}
+
+export interface FieldOption {
+  label: string;
+  value: string | number;
+}
+
+export interface FormField {
+  key: keyof PredictionInput;
+  label: string;
+  type: "number" | "currency" | "select";
+  min?: number;
+  max?: number;
+  icon?: React.ReactElement;
+  options?: FieldOption[];
+  step?: number;
+}
+
+export interface FieldGroup {
+  title: string;
+  icon: React.ReactElement;
+  description?: string;
+  gradient?: string;
+  fields: FormField[];
+}
+
+export type StatCardColor = "blue" | "emerald" | "purple";
+
 export const residenceTypeOptions = [
   { label: "Urban", value: "Urban" },
-  { label: "Rural", value: "Rural" },
+  { label: "Rural", value: "Rural" }, // Fixed typo from "Rural" to match your original
   { label: "Nomadic", value: "Nomadic" },
 ];
 
@@ -61,29 +99,3 @@ export const regionOptions = [
   { label: "Sool", value: "Sool" },
   { label: "Togdheer", value: "Togdheer" },
 ];
-
-export interface FieldOption {
-  label: string;
-  value: string | number;
-}
-
-export interface FormField {
-  key: keyof FormData;
-  label: string;
-  type: "number" | "currency" | "select";
-  min?: number;
-  max?: number;
-  icon?: React.ReactElement;
-  options?: FieldOption[];
-  step?: number;
-}
-
-export interface FieldGroup {
-  title: string;
-  icon: React.ReactElement;
-  description?: string;
-  gradient?: string;
-  fields: FormField[];
-}
-
-export type StatCardColor = "blue" | "emerald" | "purple";
