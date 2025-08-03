@@ -39,6 +39,7 @@ export async function getDashboardData() {
         totalPredicted,
         avgPredicted,
         thisMonthPredicted,
+        predictionCount: predictions.length,
       },
     };
   } catch (error) {

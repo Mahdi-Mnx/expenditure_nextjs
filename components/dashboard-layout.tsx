@@ -13,6 +13,7 @@ import {
   Menu,
   X,
   TrendingUp,
+  GitCompare,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabaseBrowser } from "@/utils/supabase";
@@ -32,6 +33,13 @@ const navigation = [
     icon: Zap,
     description: "ML Predictions",
     gradient: "from-emerald-500 to-emerald-600",
+  },
+  {
+    name: "Compare",
+    href: "/compare",
+    icon: GitCompare,
+    description: "Compare Predictions",
+    gradient: "from-blue-500 to-blue-600",
   },
   {
     name: "Profile",

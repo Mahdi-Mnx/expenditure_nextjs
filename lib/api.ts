@@ -31,32 +31,38 @@ export async function predictExpenditure(inputData: Record<string, any>) {
   return await response.json();
 }
 
-export async function updatePrediction(id: string, data: any) {
-  const response = await fetch(
-    `https://gfbgdcznzcegvutlncuv.supabase.co/rest/v1/predictions?id=eq.${id}`,
-    {
-      method: "PATCH",
+// In lib/api.ts
+export async function updatePrediction(
+  id: string,
+  inputData: Record<string, any>
+) {
+  const token = localStorage.getItem("token");
+  if (!token) throw new Error("No token found");
+
+  try {
+    console.log("Sending update:", JSON.stringify(inputData, null, 2));
+
+    const response = await fetch(`${API_URL}/predictions/${id}`, {
+      method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "",
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-        Prefer: "return=representation",
+        Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify(data),
-    }
-  );
+      body: JSON.stringify(inputData),
+    });
 
-  const contentType = response.headers.get("content-type");
+    const data = await response.json();
 
-  if (!response.ok) {
-    if (contentType?.includes("application/json")) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || "Prediction failed");
-    } else {
-      const text = await response.text();
-      throw new Error(`Server error: ${text}`);
+    if (!response.ok) {
+      console.error("Backend error response:", data);
+      throw new Error(
+        data.detail || `Update failed with status ${response.status}`
+      );
     }
+
+    return data;
+  } catch (error) {
+    console.error("Update error:", error);
+    throw error;
   }
-
-  return await response.json();
 }

@@ -13,11 +13,14 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Sparkles, Activity, TrendingUp, Zap } from "lucide-react";
+import { PredictionData } from "@/types/predict";
 
 export default function DashboardPage() {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [mounted, setMounted] = useState(false);
+  const [selectedPrediction, setSelectedPrediction] =
+    useState<PredictionData | null>(null);
   const supabase = supabaseBrowser();
   const router = useRouter();
 
@@ -37,6 +40,11 @@ export default function DashboardPage() {
 
         const dashboardData = await getDashboardData();
         setData(dashboardData);
+
+        // Set the first prediction as selected by default
+        if (dashboardData?.recentPredictions?.length > 0) {
+          setSelectedPrediction(dashboardData.recentPredictions[0]);
+        }
       } catch (error) {
         console.error("Error fetching dashboard data:", error);
         toast.error("Failed to load dashboard data");
@@ -280,15 +288,16 @@ export default function DashboardPage() {
           </div>
 
           {/* Enhanced Charts Section */}
-          <div
-            className="grid lg:grid-cols-2 gap-2"
-            style={{ animation: "fadeInUp 0.8s ease-out 0.6s both" }}
-          >
+          <div className="grid lg:grid-cols-2 gap-2">
             <div className="lg:col-span-1">
-              <SpendingChart />
+              <SpendingChart prediction={selectedPrediction} />
             </div>
             <div>
-              <RecentPredictions predictions={data.recentPredictions} />
+              <RecentPredictions
+                predictions={data.recentPredictions}
+                selectedPrediction={selectedPrediction}
+                onSelect={setSelectedPrediction}
+              />
             </div>
           </div>
 

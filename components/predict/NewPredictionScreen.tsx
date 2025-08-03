@@ -28,7 +28,7 @@ import { predictExpenditure, updatePrediction } from "@/lib/api";
 import { DashboardLayout } from "@/components/dashboard-layout";
 import {
   type FieldGroup,
-  type FormData,
+  type PredictionInput,
   type FormField,
   regionOptions,
   residenceTypeOptions,
@@ -44,7 +44,7 @@ const fieldGroups: FieldGroup[] = [
     gradient: "from-emerald-500 to-teal-600",
     fields: [
       {
-        key: "Number_of_Members",
+        key: "hhsize",
         label: "Number of Household Members",
         type: "number",
         min: 1,
@@ -52,14 +52,14 @@ const fieldGroups: FieldGroup[] = [
         icon: <Users size={16} />,
       },
       {
-        key: "Region",
+        key: "Region_Name",
         label: "Region",
         type: "select",
         options: regionOptions,
         icon: <MapPin size={16} />,
       },
       {
-        key: "Residence_Type",
+        key: "Area_Name",
         label: "Residence Type",
         type: "select",
         options: residenceTypeOptions,
@@ -74,90 +74,75 @@ const fieldGroups: FieldGroup[] = [
     gradient: "from-blue-500 to-cyan-600",
     fields: [
       {
-        key: "Food_Expenditure",
+        key: "exp_food",
         label: "Food Expenditure",
         type: "currency",
         icon: <ShoppingCart size={16} />,
       },
       {
-        key: "NonFood_Expenditure",
-        label: "Non-Food Expenditure",
-        type: "currency",
-        icon: <Package size={16} />,
-      },
-      {
-        key: "Housing_Expenditure",
+        key: "exp_rent",
         label: "Housing Expenditure",
         type: "currency",
         icon: <Home size={16} />,
       },
       {
-        key: "Utilities_Expenditure",
-        label: "Utilities Expenditure",
+        key: "exp_Education",
+        label: "Education Expenditure",
+        type: "currency",
+        icon: <Package size={16} />,
+      },
+      {
+        key: "exp_Water",
+        label: "Water Expenditure",
         type: "currency",
         icon: <Droplet size={16} />,
       },
       {
-        key: "Transport_Expenditure",
-        label: "Transport Expenditure",
+        key: "exp_Electricity",
+        label: "Electricity Expenditure",
+        type: "currency",
+        icon: <Zap size={16} />,
+      },
+    ],
+  },
+  {
+    title: "Additional Expenses",
+    icon: <BarChart2 size={20} className="text-purple-500" />,
+    description: "Additional financial details",
+    gradient: "from-purple-500 to-pink-600",
+    fields: [
+      {
+        key: "Savings_or_Insurance_Payment",
+        label: "Savings/Insurance Payment",
+        type: "currency",
+        icon: <PiggyBank size={16} />,
+      },
+      {
+        key: "Communication_Exp",
+        label: "Communication Expenses",
         type: "currency",
         icon: <Activity size={16} />,
       },
     ],
   },
-  {
-    title: "Additional Economic Data",
-    icon: <BarChart2 size={20} className="text-purple-500" />,
-    description: "Additional income and expenditure details",
-    gradient: "from-purple-500 to-pink-600",
-    fields: [
-      {
-        key: "Spent_on_Food_Drink_Outside",
-        label: "Spent on Food/Drink Outside",
-        type: "currency",
-        icon: <ShoppingCart size={16} />,
-      },
-      {
-        key: "General_NonFood_Expenditure",
-        label: "General Non-Food Expenditure",
-        type: "currency",
-        icon: <Package size={16} />,
-      },
-      {
-        key: "Livestock_Byproducts_Value",
-        label: "Livestock Byproducts Value",
-        type: "currency",
-        icon: <Beef size={16} />,
-      },
-      {
-        key: "Business_Revenue",
-        label: "Business Revenue",
-        type: "currency",
-        icon: <PiggyBank size={16} />,
-      },
-    ],
-  },
 ];
 
-const defaultValues: FormData = {
-  Number_of_Members: 1,
-  Region: "Banadir",
-  Residence_Type: "Urban",
-  Food_Expenditure: 0,
-  NonFood_Expenditure: 0,
-  Housing_Expenditure: 0,
-  Utilities_Expenditure: 0,
-  Transport_Expenditure: 0,
-  Spent_on_Food_Drink_Outside: 0,
-  General_NonFood_Expenditure: 0,
-  Livestock_Byproducts_Value: 0,
-  Business_Revenue: 0,
+const defaultValues: PredictionInput = {
+  hhsize: 1,
+  Region_Name: "Banadir",
+  Area_Name: "Urban",
+  exp_food: 0,
+  exp_rent: 0,
+  exp_Education: 0,
+  exp_Water: 0,
+  exp_Electricity: 0,
+  Savings_or_Insurance_Payment: 0,
+  Communication_Exp: 0,
 };
-
 export default function NewPredictionScreen() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [form, setForm] = useState<FormData>(defaultValues);
+  const [form, setForm] = useState<PredictionInput>(defaultValues);
   const [currentStep, setCurrentStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<number | null>(null);
@@ -181,9 +166,9 @@ export default function NewPredictionScreen() {
     }
   }, [isEditMode, searchParams]);
 
-  const handleChange = <K extends keyof FormData>(
+  const handleChange = <K extends keyof PredictionInput>(
     key: K,
-    value: FormData[K]
+    value: PredictionInput[K]
   ) => {
     setForm((prev) => ({ ...prev, [key]: value }));
   };
@@ -206,20 +191,20 @@ export default function NewPredictionScreen() {
     if (loading) return;
     setLoading(true);
     try {
-      let res;
       if (isEditMode && predictionId) {
-        res = await updatePrediction(predictionId, {
-          input_data: form,
-          updated_at: new Date().toISOString(),
-        });
+        // Send the form data DIRECTLY, not nested under input_data
+        const response = await updatePrediction(predictionId, form);
+        console.log("Update successful:", response);
         router.push("/predict");
         return;
       }
-      res = await predictExpenditure(form);
-      setResult(res.predicted_expenditure || res.predicted_exp);
+
+      // For new predictions
+      const response = await predictExpenditure(form);
+      setResult(response.predicted_expenditure || response.predicted_exp);
     } catch (err: any) {
-      console.error(err);
-      alert(err.message);
+      console.error("Full error:", err);
+      alert(err.message || "Update failed");
     } finally {
       setLoading(false);
     }
@@ -434,7 +419,7 @@ export default function NewPredictionScreen() {
                   ${result.toFixed(2)}
                 </h2>
                 <p className="text-slate-300 text-xl font-medium">
-                  Predicted Monthly Expenditure
+                  Predicted Yearly Expenditure
                 </p>
               </div>
 
@@ -448,28 +433,28 @@ export default function NewPredictionScreen() {
                     {[
                       {
                         label: "Food",
-                        value: form.Food_Expenditure,
+                        value: form.exp_food,
                         icon: ShoppingCart,
                       },
                       {
-                        label: "Non-Food",
-                        value: form.NonFood_Expenditure,
-                        icon: Package,
-                      },
-                      {
-                        label: "Housing",
-                        value: form.Housing_Expenditure,
+                        label: "Rent",
+                        value: form.exp_rent,
                         icon: Home,
                       },
                       {
-                        label: "Utilities",
-                        value: form.Utilities_Expenditure,
+                        label: "Education",
+                        value: form.exp_Education,
+                        icon: Package,
+                      },
+                      {
+                        label: "Water",
+                        value: form.exp_Water,
                         icon: Droplet,
                       },
                       {
-                        label: "Transport",
-                        value: form.Transport_Expenditure,
-                        icon: Activity,
+                        label: "Electricity",
+                        value: form.exp_Electricity,
+                        icon: Zap,
                       },
                     ].map((item, index) => (
                       <div
@@ -503,13 +488,17 @@ export default function NewPredictionScreen() {
                     {[
                       {
                         label: "Household Members",
-                        value: form.Number_of_Members,
+                        value: form.hhsize,
                         icon: Users,
                       },
-                      { label: "Region", value: form.Region, icon: MapPin },
+                      {
+                        label: "Region",
+                        value: form.Region_Name,
+                        icon: MapPin,
+                      },
                       {
                         label: "Residence Type",
-                        value: form.Residence_Type,
+                        value: form.Area_Name,
                         icon: Home,
                       },
                     ].map((item, index) => (

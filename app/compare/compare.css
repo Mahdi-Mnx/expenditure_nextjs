@@ -1,0 +1,458 @@
+/* Compare Container */
+.compare-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, rgb(15 23 42) 0%, rgb(30 41 59) 100%);
+  position: relative;
+}
+
+/* Header */
+.compare-header {
+  padding: 2rem 1.5rem;
+  border-bottom: 1px solid rgba(51 65 85 / 0.3);
+  background: linear-gradient(
+    135deg,
+    rgba(30 58 138 / 0.05) 0%,
+    rgba(16 185 129 / 0.05) 100%
+  );
+  backdrop-filter: blur(10px);
+}
+
+.compare-header-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  animation: slideInDown 0.6s ease-out;
+}
+
+.compare-header-left {
+  margin-bottom: 1rem;
+}
+
+.compare-back-button {
+  color: rgb(148 163 184);
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.compare-back-button:hover {
+  color: white;
+  background-color: rgba(51 65 85 / 0.5);
+}
+
+.compare-back-icon {
+  width: 1rem;
+  height: 1rem;
+  margin-right: 0.5rem;
+}
+
+.compare-header-text {
+  text-align: center;
+}
+
+.compare-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 0.75rem;
+  animation: fadeInUp 0.8s ease-out;
+}
+
+.compare-title-icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  margin-right: 1rem;
+  color: rgb(30 58 138);
+  animation: rotateIn 1s ease-out;
+}
+
+.compare-subtitle {
+  color: rgb(148 163 184);
+  font-size: 1.125rem;
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.6;
+  animation: fadeInUp 0.8s ease-out 0.2s both;
+}
+
+/* Content */
+.compare-content {
+  padding: 2rem 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Loading State */
+.compare-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.compare-loading-spinner {
+  width: 3rem;
+  height: 3rem;
+  border: 3px solid rgba(30 58 138 / 0.2);
+  border-top: 3px solid rgb(30 58 138);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+.compare-loading-text {
+  color: rgb(148 163 184);
+  font-size: 1.125rem;
+}
+
+/* Selection Phase */
+.compare-selection {
+  animation: fadeInUp 0.8s ease-out;
+}
+
+.compare-selection-grid {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 2rem;
+  align-items: start;
+  margin-bottom: 3rem;
+}
+
+.compare-selection-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.compare-selection-title {
+  display: flex;
+  align-items: center;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: white;
+  margin-bottom: 0.5rem;
+}
+
+.compare-selection-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  background: linear-gradient(135deg, rgb(99 102 241) 0%, rgb(139 92 246) 100%);
+  color: white;
+  border-radius: 50%;
+  font-weight: 700;
+  margin-right: 0.75rem;
+  font-size: 0.875rem;
+}
+
+/* VS Divider */
+.compare-vs-divider {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 0;
+  min-height: 200px;
+}
+
+.compare-vs-line {
+  width: 2px;
+  height: 3rem;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgb(30 58 138),
+    transparent
+  );
+  margin: 0.5rem 0;
+}
+
+.compare-vs-text {
+  background: linear-gradient(135deg, rgb(30 58 138) 0%, rgb(16 185 129) 100%);
+  color: white;
+  font-weight: 700;
+  font-size: 1.25rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 2rem;
+  box-shadow: 0 4px 15px rgba(30 58 138 / 0.3);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+/* Compare Action */
+.compare-action {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.compare-button {
+  background: linear-gradient(135deg, rgb(30 58 138) 0%, rgb(16 185 129) 100%);
+  color: white;
+  font-weight: 600;
+  padding: 1rem 2rem;
+  border-radius: 0.75rem;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1.125rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(30 58 138 / 0.3);
+  min-width: 200px;
+  justify-content: center;
+}
+
+.compare-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(30 58 138 / 0.4);
+}
+
+.compare-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.compare-button-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.compare-button-spinner {
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 2px solid rgba(255 255 255 / 0.3);
+  border-top: 2px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+/* Empty State */
+.compare-empty-card {
+  background: rgba(30 41 59 / 0.6);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(51 65 85 / 0.3);
+  border-radius: 1rem;
+  padding: 3rem 2rem;
+}
+
+.compare-empty-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.compare-empty-icon {
+  width: 5rem;
+  height: 5rem;
+  background: linear-gradient(
+    135deg,
+    rgba(30 58 138 / 0.1) 0%,
+    rgba(16 185 129 / 0.1) 100%
+  );
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.compare-empty-icon-svg {
+  width: 2.5rem;
+  height: 2.5rem;
+  color: rgb(30 58 138);
+}
+
+.compare-empty-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 1rem;
+}
+
+.compare-empty-description {
+  color: rgb(148 163 184);
+  font-size: 1rem;
+  line-height: 1.6;
+  max-width: 400px;
+  margin-bottom: 2rem;
+}
+
+.compare-empty-button {
+  background: linear-gradient(135deg, rgb(30 58 138) 0%, rgb(16 185 129) 100%);
+  color: white;
+  font-weight: 600;
+  padding: 0.875rem 2rem;
+  border-radius: 0.75rem;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(30 58 138 / 0.3);
+}
+
+.compare-empty-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(30 58 138 / 0.4);
+}
+
+.compare-empty-button-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+/* Skeleton Loading */
+.compare-skeleton-title {
+  width: 300px;
+  height: 2.5rem;
+  background: rgba(51 65 85 / 0.5);
+  border-radius: 0.5rem;
+  margin: 0 auto 0.75rem;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.compare-skeleton-subtitle {
+  width: 500px;
+  height: 1.125rem;
+  background: rgba(51 65 85 / 0.3);
+  border-radius: 0.5rem;
+  margin: 0 auto;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* Animations */
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes rotateIn {
+  from {
+    opacity: 0;
+    transform: rotate(-180deg);
+  }
+  to {
+    opacity: 1;
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .compare-selection-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .compare-vs-divider {
+    flex-direction: row;
+    padding: 1rem 0;
+    min-height: auto;
+  }
+
+  .compare-vs-line {
+    width: 3rem;
+    height: 2px;
+    background: linear-gradient(
+      to right,
+      transparent,
+      rgb(99 102 241),
+      transparent
+    );
+    margin: 0 0.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .compare-header {
+    padding: 1.5rem 1rem;
+  }
+
+  .compare-title {
+    font-size: 2rem;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .compare-title-icon {
+    width: 2rem;
+    height: 2rem;
+    margin-right: 0;
+  }
+
+  .compare-subtitle {
+    font-size: 1rem;
+  }
+
+  .compare-content {
+    padding: 1.5rem 1rem;
+  }
+
+  .compare-selection-grid {
+    gap: 1.5rem;
+  }
+
+  .compare-empty-card {
+    padding: 2rem 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .compare-title {
+    font-size: 1.75rem;
+  }
+
+  .compare-button {
+    padding: 0.875rem 1.5rem;
+    font-size: 1rem;
+    min-width: 180px;
+  }
+
+  .compare-empty-description {
+    font-size: 0.875rem;
+  }
+}
