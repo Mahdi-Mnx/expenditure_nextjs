@@ -30,8 +30,19 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Download, Filter, Shield, AlertTriangle, Eye } from "lucide-react";
+import {
+  Download,
+  Filter,
+  Shield,
+  AlertTriangle,
+  Eye,
+  Database,
+  TrendingUp,
+  Users,
+  BarChart3,
+} from "lucide-react";
 import { AdminDashboardLayout } from "@/components/admin/dashboard-layout";
+import "../admin.css";
 export type Prediction = {
   id: number;
   user_id: string;
@@ -60,6 +71,7 @@ export type Prediction = {
     Communication_Expense: number;
   };
 };
+
 // Mock data with privacy-protected information
 const mockPredictions: Prediction[] = [
   {
@@ -392,7 +404,6 @@ export default function PredictionsPage() {
         prediction.region_name
           .toLowerCase()
           .includes(filters.region.toLowerCase());
-
       let matchesDate = true;
       if (filters.dateFrom || filters.dateTo) {
         const predictionDate = new Date(prediction.created_at);
@@ -405,10 +416,8 @@ export default function PredictionsPage() {
             matchesDate && predictionDate <= new Date(filters.dateTo);
         }
       }
-
       return matchesUserId && matchesRegion && matchesDate;
     });
-
     setFilteredPredictions(filtered);
     setPagination((prev) => ({
       ...prev,
@@ -424,9 +433,24 @@ export default function PredictionsPage() {
     pagination.page * pagination.limit
   );
 
+  // Calculate stats
+  const totalPredictions = filteredPredictions.length;
+  const avgPrediction = Math.round(
+    filteredPredictions.reduce(
+      (sum, pred) => sum + pred.predicted_annual_expenditure,
+      0
+    ) / totalPredictions || 0
+  );
+  const uniqueRegions = new Set(
+    filteredPredictions.map((pred) => pred.region_name)
+  ).size;
+  const avgHouseholdSize = Math.round(
+    filteredPredictions.reduce((sum, pred) => sum + pred.hhsize, 0) /
+      totalPredictions || 0
+  );
+
   const exportToCSV = () => {
     setExporting(true);
-
     // Simulate export delay
     setTimeout(() => {
       const headers = [
@@ -446,7 +470,6 @@ export default function PredictionsPage() {
         "Savings/Insurance",
         "Communication Expense",
       ];
-
       const csvData = filteredPredictions.map((prediction) => [
         prediction.id,
         prediction.user_id,
@@ -464,11 +487,9 @@ export default function PredictionsPage() {
         prediction.input_data.Savings_or_Insurance_Payment,
         prediction.input_data.Communication_Expense,
       ]);
-
       const csvContent = [headers, ...csvData]
         .map((row) => row.join(","))
         .join("\n");
-
       const blob = new Blob([csvContent], { type: "text/csv" });
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -478,425 +499,545 @@ export default function PredictionsPage() {
       }.csv`;
       a.click();
       window.URL.revokeObjectURL(url);
-
       setExporting(false);
     }, 1000);
   };
 
+  if (loading) {
+    return (
+      <AdminDashboardLayout>
+        <div className="admin-container">
+          <div className="flex items-center justify-center h-screen">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+          </div>
+        </div>
+      </AdminDashboardLayout>
+    );
+  }
+
   return (
     <AdminDashboardLayout>
-      <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
-        <div className="flex items-center gap-2">
-          <Shield className="h-5 w-5 text-blue-600" />
-          <h1 className="text-lg font-semibold">Prediction Records (Admin)</h1>
+      <div className="admin-container">
+        {/* Animated Header */}
+        <div className="admin-header">
+          <div className="admin-header-content">
+            <div className="admin-header-text">
+              <h1 className="admin-title">
+                <Database className="admin-title-icon" />
+                Prediction Records
+              </h1>
+              <p className="admin-subtitle">
+                Privacy-protected prediction data for administrative analysis.
+              </p>
+            </div>
+          </div>
         </div>
-      </header>
-      <div className="flex flex-1 flex-col gap-4 p-4">
-        {/* Privacy Notice */}
-        <Alert>
-          <Shield className="h-4 w-4" />
-          <AlertDescription>
-            <strong>Privacy Protected:</strong> User information is masked for
-            privacy. Only essential data for analysis is displayed. All access
-            is logged for audit purposes.
-          </AlertDescription>
-        </Alert>
 
-        {/* Filters Section */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Filter className="h-5 w-5" />
-              Filters
-            </CardTitle>
-            <CardDescription>
-              Filter prediction records by various criteria
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-              <div className="space-y-2">
-                <Label htmlFor="userId">User ID (Partial)</Label>
-                <Input
-                  id="userId"
-                  placeholder="Enter partial user ID"
-                  value={filters.userId}
-                  onChange={(e) =>
-                    setFilters((prev) => ({
-                      ...prev,
-                      userId: e.target.value,
-                    }))
-                  }
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="region">Region</Label>
-                <Input
-                  id="region"
-                  placeholder="Enter region"
-                  value={filters.region}
-                  onChange={(e) =>
-                    setFilters((prev) => ({
-                      ...prev,
-                      region: e.target.value,
-                    }))
-                  }
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="dateFrom">Date From</Label>
-                <Input
-                  id="dateFrom"
-                  type="date"
-                  value={filters.dateFrom}
-                  onChange={(e) =>
-                    setFilters((prev) => ({
-                      ...prev,
-                      dateFrom: e.target.value,
-                    }))
-                  }
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="dateTo">Date To</Label>
-                <Input
-                  id="dateTo"
-                  type="date"
-                  value={filters.dateTo}
-                  onChange={(e) =>
-                    setFilters((prev) => ({
-                      ...prev,
-                      dateTo: e.target.value,
-                    }))
-                  }
-                />
+        {/* Animated Stats Cards */}
+        <div className="admin-stats">
+          <div className="admin-stat-card stat-card-1">
+            <div className="admin-stat-header">
+              <div className="admin-stat-label">Total Records</div>
+              <div className="admin-stat-icon-container stat-icon-blue">
+                <Database className="admin-stat-icon" />
               </div>
             </div>
-            <div className="flex gap-2 mt-4">
-              <Button
-                variant="outline"
-                onClick={() =>
-                  setFilters({
-                    userId: "",
-                    region: "",
-                    dateFrom: "",
-                    dateTo: "",
-                  })
-                }
-              >
-                Clear Filters
-              </Button>
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button
-                    className="ml-auto"
-                    disabled={filteredPredictions.length === 0}
-                  >
-                    <Download className="h-4 w-4 mr-2" />
-                    Export CSV ({filteredPredictions.length} records)
-                  </Button>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle className="flex items-center gap-2">
-                      <AlertTriangle className="h-5 w-5 text-amber-500" />
-                      Confirm Data Export
-                    </DialogTitle>
-                    <DialogDescription>
-                      You are about to export {filteredPredictions.length}{" "}
-                      prediction records. This action will be logged for audit
-                      purposes.
-                      <br />
-                      <br />
-                      <strong>Privacy Notice:</strong> All exported data will
-                      have user information masked to protect privacy.
-                    </DialogDescription>
-                  </DialogHeader>
-                  <DialogFooter>
-                    <Button variant="outline">Cancel</Button>
-                    <Button onClick={exportToCSV} disabled={exporting}>
-                      {exporting ? "Exporting..." : "Confirm Export"}
-                    </Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
+            <div className="admin-stat-value">{totalPredictions}</div>
+            <div className="admin-stat-trend">
+              <span>Filtered results</span>
             </div>
-          </CardContent>
-        </Card>
+          </div>
 
-        {/* Results Section */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Prediction Records ({pagination.total})</CardTitle>
-            <CardDescription>
-              Privacy-protected prediction data for administrative analysis
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="rounded-md border">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>ID</TableHead>
-                    <TableHead>User (Masked)</TableHead>
-                    <TableHead>Region</TableHead>
-                    <TableHead>Area</TableHead>
-                    <TableHead>HH Size</TableHead>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Predicted Amount</TableHead>
-                    <TableHead>Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {loading ? (
-                    <TableRow>
-                      <TableCell colSpan={8} className="text-center py-8">
-                        Loading predictions...
-                      </TableCell>
-                    </TableRow>
-                  ) : paginatedPredictions.length === 0 ? (
-                    <TableRow>
-                      <TableCell colSpan={8} className="text-center py-8">
-                        No predictions found matching your filters
-                      </TableCell>
-                    </TableRow>
-                  ) : (
-                    paginatedPredictions.map((prediction) => (
-                      <TableRow key={prediction.id}>
-                        <TableCell className="font-medium">
-                          {prediction.id}
-                        </TableCell>
-                        <TableCell>
-                          <div>
-                            <div className="font-medium text-xs">
-                              {prediction.user_id}
-                            </div>
-                            <div className="text-xs text-muted-foreground">
-                              {prediction.masked_email}
-                            </div>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="outline">
-                            {prediction.region_name}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <Badge
-                            variant={
-                              prediction.area === "Urban"
-                                ? "default"
-                                : prediction.area === "Rural"
-                                ? "secondary"
-                                : "outline"
-                            }
-                          >
-                            {prediction.area}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>{prediction.hhsize}</TableCell>
-                        <TableCell>
-                          {new Date(prediction.created_at).toLocaleDateString()}
-                        </TableCell>
-                        <TableCell className="font-medium">
-                          $
-                          {prediction.predicted_annual_expenditure.toLocaleString()}
-                        </TableCell>
-                        <TableCell>
-                          <Dialog>
-                            <DialogTrigger asChild>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() =>
-                                  setSelectedPrediction(prediction)
-                                }
-                              >
-                                <Eye className="h-4 w-4 mr-1" />
-                                View
-                              </Button>
-                            </DialogTrigger>
-                            <DialogContent className="max-w-2xl">
-                              <DialogHeader>
-                                <DialogTitle>
-                                  Prediction Details (ID:{" "}
-                                  {selectedPrediction?.id})
-                                </DialogTitle>
-                                <DialogDescription>
-                                  Detailed view of prediction data with privacy
-                                  protection
-                                </DialogDescription>
-                              </DialogHeader>
-                              {selectedPrediction && (
-                                <div className="space-y-4">
-                                  <div className="grid grid-cols-2 gap-4">
-                                    <div>
-                                      <Label className="text-sm font-medium">
-                                        User ID (Masked)
-                                      </Label>
-                                      <p className="text-sm">
-                                        {selectedPrediction.user_id}
-                                      </p>
-                                    </div>
-                                    <div>
-                                      <Label className="text-sm font-medium">
-                                        Email (Masked)
-                                      </Label>
-                                      <p className="text-sm">
-                                        {selectedPrediction.masked_email}
-                                      </p>
-                                    </div>
-                                    <div>
-                                      <Label className="text-sm font-medium">
-                                        Region
-                                      </Label>
-                                      <p className="text-sm">
-                                        {selectedPrediction.region_name}
-                                      </p>
-                                    </div>
-                                    <div>
-                                      <Label className="text-sm font-medium">
-                                        Area
-                                      </Label>
-                                      <p className="text-sm">
-                                        {selectedPrediction.area}
-                                      </p>
-                                    </div>
-                                    <div>
-                                      <Label className="text-sm font-medium">
-                                        Household Size
-                                      </Label>
-                                      <p className="text-sm">
-                                        {selectedPrediction.hhsize}
-                                      </p>
-                                    </div>
-                                    <div>
-                                      <Label className="text-sm font-medium">
-                                        Date
-                                      </Label>
-                                      <p className="text-sm">
-                                        {new Date(
-                                          selectedPrediction.created_at
-                                        ).toLocaleString()}
-                                      </p>
-                                    </div>
-                                  </div>
-
-                                  <div>
-                                    <Label className="text-sm font-medium">
-                                      Monthly Input Data
-                                    </Label>
-                                    <div className="grid grid-cols-2 gap-2 mt-2 text-sm">
-                                      <div>
-                                        Food: $
-                                        {selectedPrediction.input_data.exp_food}
-                                      </div>
-                                      <div>
-                                        Rent: $
-                                        {selectedPrediction.input_data.exp_rent}
-                                      </div>
-                                      <div>
-                                        Education: $
-                                        {
-                                          selectedPrediction.input_data
-                                            .exp_Education
-                                        }
-                                      </div>
-                                      <div>
-                                        Water: $
-                                        {
-                                          selectedPrediction.input_data
-                                            .exp_Water
-                                        }
-                                      </div>
-                                      <div>
-                                        Electricity: $
-                                        {
-                                          selectedPrediction.input_data
-                                            .exp_Electricity
-                                        }
-                                      </div>
-                                      <div>
-                                        Savings/Insurance: $
-                                        {
-                                          selectedPrediction.input_data
-                                            .Savings_or_Insurance_Payment
-                                        }
-                                      </div>
-                                      <div>
-                                        Communication: $
-                                        {
-                                          selectedPrediction.input_data
-                                            .Communication_Expense
-                                        }
-                                      </div>
-                                    </div>
-                                  </div>
-
-                                  <div>
-                                    <Label className="text-sm font-medium">
-                                      Predicted Annual Expenditure
-                                    </Label>
-                                    <p className="text-lg font-bold text-green-600">
-                                      $
-                                      {selectedPrediction.predicted_annual_expenditure.toLocaleString()}
-                                    </p>
-                                  </div>
-                                </div>
-                              )}
-                            </DialogContent>
-                          </Dialog>
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  )}
-                </TableBody>
-              </Table>
+          <div className="admin-stat-card stat-card-2">
+            <div className="admin-stat-header">
+              <div className="admin-stat-label">Avg Prediction</div>
+              <div className="admin-stat-icon-container stat-icon-emerald">
+                <TrendingUp className="admin-stat-icon" />
+              </div>
             </div>
+            <div className="admin-stat-value">
+              ${avgPrediction.toLocaleString()}
+            </div>
+            <div className="admin-stat-trend">
+              <span>Annual expenditure</span>
+            </div>
+          </div>
 
-            {/* Pagination */}
-            {pagination.totalPages > 1 && (
-              <div className="flex items-center justify-between mt-4">
-                <p className="text-sm text-muted-foreground">
-                  Showing {(pagination.page - 1) * pagination.limit + 1} to{" "}
-                  {Math.min(
-                    pagination.page * pagination.limit,
-                    pagination.total
-                  )}{" "}
-                  of {pagination.total} results
-                </p>
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    disabled={pagination.page === 1}
-                    onClick={() =>
-                      setPagination((prev) => ({
+          <div className="admin-stat-card stat-card-3">
+            <div className="admin-stat-header">
+              <div className="admin-stat-label">Unique Regions</div>
+              <div className="admin-stat-icon-container stat-icon-violet">
+                <BarChart3 className="admin-stat-icon" />
+              </div>
+            </div>
+            <div className="admin-stat-value">{uniqueRegions}</div>
+            <div className="admin-stat-trend">
+              <span>Geographic coverage</span>
+            </div>
+          </div>
+
+          <div className="admin-stat-card stat-card-4">
+            <div className="admin-stat-header">
+              <div className="admin-stat-label">Avg Household</div>
+              <div className="admin-stat-icon-container stat-icon-orange">
+                <Users className="admin-stat-icon" />
+              </div>
+            </div>
+            <div className="admin-stat-value">{avgHouseholdSize}</div>
+            <div className="admin-stat-trend">
+              <span>Members per household</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Main Content */}
+        <div className="admin-content">
+          {/* Privacy Notice */}
+          <Alert className="mb-6 bg-blue-500/10 border-blue-500/30 text-blue-300">
+            <Shield className="h-4 w-4" />
+            <AlertDescription>
+              <strong>Privacy Protected:</strong> User information is masked for
+              privacy. Only essential data for analysis is displayed. All access
+              is logged for audit purposes.
+            </AlertDescription>
+          </Alert>
+
+          {/* Filters Section */}
+          <Card className="admin-card mb-6">
+            <CardHeader className="admin-card-header">
+              <CardTitle className="admin-card-title flex items-center gap-2">
+                <Filter className="h-5 w-5 text-blue-400" />
+                Filters
+              </CardTitle>
+              <CardDescription className="admin-card-description">
+                Filter prediction records by various criteria
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                <div className="space-y-2">
+                  <Label htmlFor="userId" className="text-gray-300">
+                    User ID (Partial)
+                  </Label>
+                  <Input
+                    id="userId"
+                    placeholder="Enter partial user ID"
+                    className="bg-slate-700/50 border-slate-600 text-white placeholder:text-gray-400"
+                    value={filters.userId}
+                    onChange={(e) =>
+                      setFilters((prev) => ({
                         ...prev,
-                        page: prev.page - 1,
+                        userId: e.target.value,
                       }))
                     }
-                  >
-                    Previous
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    disabled={pagination.page === pagination.totalPages}
-                    onClick={() =>
-                      setPagination((prev) => ({
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="region" className="text-gray-300">
+                    Region
+                  </Label>
+                  <Input
+                    id="region"
+                    placeholder="Enter region"
+                    className="bg-slate-700/50 border-slate-600 text-white placeholder:text-gray-400"
+                    value={filters.region}
+                    onChange={(e) =>
+                      setFilters((prev) => ({
                         ...prev,
-                        page: prev.page + 1,
+                        region: e.target.value,
                       }))
                     }
-                  >
-                    Next
-                  </Button>
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="dateFrom" className="text-gray-300">
+                    Date From
+                  </Label>
+                  <Input
+                    id="dateFrom"
+                    type="date"
+                    className="bg-slate-700/50 border-slate-600 text-white"
+                    value={filters.dateFrom}
+                    onChange={(e) =>
+                      setFilters((prev) => ({
+                        ...prev,
+                        dateFrom: e.target.value,
+                      }))
+                    }
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="dateTo" className="text-gray-300">
+                    Date To
+                  </Label>
+                  <Input
+                    id="dateTo"
+                    type="date"
+                    className="bg-slate-700/50 border-slate-600 text-white"
+                    value={filters.dateTo}
+                    onChange={(e) =>
+                      setFilters((prev) => ({
+                        ...prev,
+                        dateTo: e.target.value,
+                      }))
+                    }
+                  />
                 </div>
               </div>
-            )}
-          </CardContent>
-        </Card>
+              <div className="flex gap-2 mt-4">
+                <Button
+                  variant="outline"
+                  className="bg-slate-700/50 border-slate-600 text-white hover:bg-slate-600/50"
+                  onClick={() =>
+                    setFilters({
+                      userId: "",
+                      region: "",
+                      dateFrom: "",
+                      dateTo: "",
+                    })
+                  }
+                >
+                  Clear Filters
+                </Button>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button
+                      className="ml-auto bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white"
+                      disabled={filteredPredictions.length === 0}
+                    >
+                      <Download className="h-4 w-4 mr-2" />
+                      Export CSV ({filteredPredictions.length} records)
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="bg-slate-800 border-slate-700 text-white">
+                    <DialogHeader>
+                      <DialogTitle className="flex items-center gap-2 text-white">
+                        <AlertTriangle className="h-5 w-5 text-amber-500" />
+                        Confirm Data Export
+                      </DialogTitle>
+                      <DialogDescription className="text-gray-400">
+                        You are about to export {filteredPredictions.length}{" "}
+                        prediction records. This action will be logged for audit
+                        purposes.
+                        <br />
+                        <br />
+                        <strong>Privacy Notice:</strong> All exported data will
+                        have user information masked to protect privacy.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                      <Button
+                        variant="outline"
+                        className="bg-slate-700 border-slate-600 text-white hover:bg-slate-600"
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        onClick={exportToCSV}
+                        disabled={exporting}
+                        className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white"
+                      >
+                        {exporting ? "Exporting..." : "Confirm Export"}
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Results Section */}
+          <Card className="admin-card">
+            <CardHeader className="admin-card-header">
+              <CardTitle className="admin-card-title flex items-center gap-2">
+                <Database className="h-5 w-5 text-green-400" />
+                Prediction Records ({pagination.total})
+              </CardTitle>
+              <CardDescription className="admin-card-description">
+                Privacy-protected prediction data for administrative analysis
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="rounded-md border border-slate-700">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="border-slate-700">
+                      <TableHead className="text-gray-300">ID</TableHead>
+                      <TableHead className="text-gray-300">
+                        User (Masked)
+                      </TableHead>
+                      <TableHead className="text-gray-300">Region</TableHead>
+                      <TableHead className="text-gray-300">Area</TableHead>
+                      <TableHead className="text-gray-300">HH Size</TableHead>
+                      <TableHead className="text-gray-300">Date</TableHead>
+                      <TableHead className="text-gray-300">
+                        Predicted Amount
+                      </TableHead>
+                      <TableHead className="text-gray-300">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {paginatedPredictions.length === 0 ? (
+                      <TableRow className="border-slate-700">
+                        <TableCell
+                          colSpan={8}
+                          className="text-center py-8 text-gray-400"
+                        >
+                          No predictions found matching your filters
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      paginatedPredictions.map((prediction, index) => (
+                        <TableRow
+                          key={prediction.id}
+                          className="border-slate-700 hover:bg-slate-700/30 transition-all duration-300"
+                          style={{ animationDelay: `${index * 0.1}s` }}
+                        >
+                          <TableCell className="font-medium text-white">
+                            {prediction.id}
+                          </TableCell>
+                          <TableCell>
+                            <div>
+                              <div className="font-medium text-xs text-white">
+                                {prediction.user_id}
+                              </div>
+                              <div className="text-xs text-gray-400">
+                                {prediction.masked_email}
+                              </div>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <Badge className="bg-blue-500/20 text-blue-300 border-blue-500/30">
+                              {prediction.region_name}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <Badge
+                              className={
+                                prediction.area === "Urban"
+                                  ? "bg-green-500/20 text-green-300 border-green-500/30"
+                                  : prediction.area === "Rural"
+                                  ? "bg-orange-500/20 text-orange-300 border-orange-500/30"
+                                  : "bg-purple-500/20 text-purple-300 border-purple-500/30"
+                              }
+                            >
+                              {prediction.area}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="text-white">
+                            {prediction.hhsize}
+                          </TableCell>
+                          <TableCell className="text-gray-300">
+                            {new Date(
+                              prediction.created_at
+                            ).toLocaleDateString()}
+                          </TableCell>
+                          <TableCell className="font-medium text-white">
+                            $
+                            {prediction.predicted_annual_expenditure.toLocaleString()}
+                          </TableCell>
+                          <TableCell>
+                            <Dialog>
+                              <DialogTrigger asChild>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="bg-slate-700/50 border-slate-600 text-white hover:bg-slate-600/50"
+                                  onClick={() =>
+                                    setSelectedPrediction(prediction)
+                                  }
+                                >
+                                  <Eye className="h-4 w-4 mr-1" />
+                                  View
+                                </Button>
+                              </DialogTrigger>
+                              <DialogContent className="max-w-2xl bg-slate-800 border-slate-700 text-white">
+                                <DialogHeader>
+                                  <DialogTitle className="text-white">
+                                    Prediction Details (ID:{" "}
+                                    {selectedPrediction?.id})
+                                  </DialogTitle>
+                                  <DialogDescription className="text-gray-400">
+                                    Detailed view of prediction data with
+                                    privacy protection
+                                  </DialogDescription>
+                                </DialogHeader>
+                                {selectedPrediction && (
+                                  <div className="space-y-4">
+                                    <div className="grid grid-cols-2 gap-4">
+                                      <div>
+                                        <Label className="text-sm font-medium text-gray-300">
+                                          User ID (Masked)
+                                        </Label>
+                                        <p className="text-sm text-white">
+                                          {selectedPrediction.user_id}
+                                        </p>
+                                      </div>
+                                      <div>
+                                        <Label className="text-sm font-medium text-gray-300">
+                                          Email (Masked)
+                                        </Label>
+                                        <p className="text-sm text-white">
+                                          {selectedPrediction.masked_email}
+                                        </p>
+                                      </div>
+                                      <div>
+                                        <Label className="text-sm font-medium text-gray-300">
+                                          Region
+                                        </Label>
+                                        <p className="text-sm text-white">
+                                          {selectedPrediction.region_name}
+                                        </p>
+                                      </div>
+                                      <div>
+                                        <Label className="text-sm font-medium text-gray-300">
+                                          Area
+                                        </Label>
+                                        <p className="text-sm text-white">
+                                          {selectedPrediction.area}
+                                        </p>
+                                      </div>
+                                      <div>
+                                        <Label className="text-sm font-medium text-gray-300">
+                                          Household Size
+                                        </Label>
+                                        <p className="text-sm text-white">
+                                          {selectedPrediction.hhsize}
+                                        </p>
+                                      </div>
+                                      <div>
+                                        <Label className="text-sm font-medium text-gray-300">
+                                          Date
+                                        </Label>
+                                        <p className="text-sm text-white">
+                                          {new Date(
+                                            selectedPrediction.created_at
+                                          ).toLocaleString()}
+                                        </p>
+                                      </div>
+                                    </div>
+                                    <div>
+                                      <Label className="text-sm font-medium text-gray-300">
+                                        Monthly Input Data
+                                      </Label>
+                                      <div className="grid grid-cols-2 gap-2 mt-2 text-sm">
+                                        <div className="text-white">
+                                          Food: $
+                                          {
+                                            selectedPrediction.input_data
+                                              .exp_food
+                                          }
+                                        </div>
+                                        <div className="text-white">
+                                          Rent: $
+                                          {
+                                            selectedPrediction.input_data
+                                              .exp_rent
+                                          }
+                                        </div>
+                                        <div className="text-white">
+                                          Education: $
+                                          {
+                                            selectedPrediction.input_data
+                                              .exp_Education
+                                          }
+                                        </div>
+                                        <div className="text-white">
+                                          Water: $
+                                          {
+                                            selectedPrediction.input_data
+                                              .exp_Water
+                                          }
+                                        </div>
+                                        <div className="text-white">
+                                          Electricity: $
+                                          {
+                                            selectedPrediction.input_data
+                                              .exp_Electricity
+                                          }
+                                        </div>
+                                        <div className="text-white">
+                                          Savings/Insurance: $
+                                          {
+                                            selectedPrediction.input_data
+                                              .Savings_or_Insurance_Payment
+                                          }
+                                        </div>
+                                        <div className="text-white">
+                                          Communication: $
+                                          {
+                                            selectedPrediction.input_data
+                                              .Communication_Expense
+                                          }
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div>
+                                      <Label className="text-sm font-medium text-gray-300">
+                                        Predicted Annual Expenditure
+                                      </Label>
+                                      <p className="text-lg font-bold text-green-400">
+                                        $
+                                        {selectedPrediction.predicted_annual_expenditure.toLocaleString()}
+                                      </p>
+                                    </div>
+                                  </div>
+                                )}
+                              </DialogContent>
+                            </Dialog>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+              {/* Pagination */}
+              {pagination.totalPages > 1 && (
+                <div className="flex items-center justify-between mt-4">
+                  <p className="text-sm text-gray-400">
+                    Showing {(pagination.page - 1) * pagination.limit + 1} to{" "}
+                    {Math.min(
+                      pagination.page * pagination.limit,
+                      pagination.total
+                    )}{" "}
+                    of {pagination.total} results
+                  </p>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="bg-slate-700/50 border-slate-600 text-white hover:bg-slate-600/50"
+                      disabled={pagination.page === 1}
+                      onClick={() =>
+                        setPagination((prev) => ({
+                          ...prev,
+                          page: prev.page - 1,
+                        }))
+                      }
+                    >
+                      Previous
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="bg-slate-700/50 border-slate-600 text-white hover:bg-slate-600/50"
+                      disabled={pagination.page === pagination.totalPages}
+                      onClick={() =>
+                        setPagination((prev) => ({
+                          ...prev,
+                          page: prev.page + 1,
+                        }))
+                      }
+                    >
+                      Next
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </AdminDashboardLayout>
   );
