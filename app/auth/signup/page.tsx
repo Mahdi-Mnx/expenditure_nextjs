@@ -95,6 +95,10 @@ export default function SignupPage() {
       });
 
       if (error) throw error;
+      // If user is auto-logged in (email confirm not required)
+      if (data.session) {
+        await supabase.auth.signOut(); // Force logout
+      }
 
       toast.success("Account created!");
       router.push("/auth/login");

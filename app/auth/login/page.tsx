@@ -57,31 +57,46 @@ export default function LoginPage() {
 
       if (error) throw error;
 
-      localStorage.setItem("token", data.session?.access_token ?? "");
       const user = data.user;
 
       if (user) {
-        // Check if profile exists
+        // Check if profile exists and get user_type
         const { data: profile, error: profileError } = await supabase
           .from("profiles")
-          .select("id")
+          .select("id, user_type")
           .eq("id", user.id)
           .single();
 
-        // If not exists, insert
+        // If profile doesn't exist, create one
         if (!profile && !profileError) {
-          await supabase.from("profiles").insert({
-            id: user.id,
-            email: user.email,
-          });
+          const { error: insertError } = await supabase
+            .from("profiles")
+            .insert({
+              id: user.id,
+              email: user.email,
+            });
+          if (insertError) throw insertError;
         }
 
-        // Save session locally
+        // Save session and user data locally
         localStorage.setItem("token", data.session?.access_token ?? "");
-        localStorage.setItem("user", JSON.stringify(user));
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+            ...user,
+            user_type: profile?.user_type || "user",
+          })
+        );
+
+        // Redirect based on user type
+        if (profile?.user_type === "admin") {
+          router.push("/admin");
+        } else {
+          router.push("/dashboard");
+        }
+
+        toast.success("Logged in successfully!");
       }
-      router.push("/dashboard");
-      toast.success("Logged in successfully!");
     } catch (err) {
       console.error("Login error:", err);
       toast.error("Invalid credentials or login failed.");

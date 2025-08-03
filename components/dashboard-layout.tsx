@@ -98,7 +98,14 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
   const handleSignOut = async () => {
     try {
+      // 1. Sign out from Supabase (removes server-side session)
       await supabase.auth.signOut();
+
+      // 2. Clear client-side data
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+
+      // 3. Redirect to login
       router.push("/auth/login");
     } catch (error) {
       console.error("Sign out error:", error);
