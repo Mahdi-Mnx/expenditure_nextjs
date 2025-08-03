@@ -1,13 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardFooter,
-} from "@/components/ui/card";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -43,7 +37,6 @@ import {
   RefreshCw,
   Plus,
   Eye,
-  Edit,
   Trash2,
   Crown,
   AlertTriangle,
@@ -52,7 +45,7 @@ import {
   Activity,
 } from "lucide-react";
 import { AdminDashboardLayout } from "@/components/admin/dashboard-layout";
-
+import "../admin.css";
 interface User {
   id: string;
   full_name: string;
@@ -123,7 +116,6 @@ export default function UsersManagementPage() {
     try {
       // Simulate loading users data
       await new Promise((resolve) => setTimeout(resolve, 1000));
-
       // Mock data - replace with actual API calls
       const mockUsers: User[] = [
         {
@@ -306,7 +298,6 @@ export default function UsersManagementPage() {
 
   const filterUsers = () => {
     let filtered = [...users];
-
     // Search filter
     if (searchTerm) {
       filtered = filtered.filter(
@@ -315,24 +306,18 @@ export default function UsersManagementPage() {
           user.email.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
-
     // Status filter
     if (statusFilter !== "all") {
       filtered = filtered.filter((user) => user.status === statusFilter);
     }
-
     // Role filter
     if (roleFilter !== "all") {
       filtered = filtered.filter((user) => user.role === roleFilter);
     }
-
     // Sort
-
-    // Then update the sort function to actually return a comparison number
     filtered.sort((a, b) => {
       let aValue: any;
       let bValue: any;
-
       switch (sortBy) {
         case "full_name":
           aValue = a.full_name.toLowerCase();
@@ -343,7 +328,6 @@ export default function UsersManagementPage() {
           bValue = b.email.toLowerCase();
           break;
       }
-
       if (aValue < bValue) return -1;
       if (aValue > bValue) return 1;
       return 0;
@@ -365,22 +349,22 @@ export default function UsersManagementPage() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "active":
-        return "bg-green-500/20 text-green-400 border-green-500/30";
+        return "bg-green-500/20 text-green-300 border-green-500/30";
       case "pending":
-        return "bg-blue-500/20 text-blue-400 border-blue-500/30";
+        return "bg-orange-500/20 text-orange-300 border-orange-500/30";
       default:
-        return "bg-gray-500/20 text-gray-400 border-gray-500/30";
+        return "bg-gray-500/20 text-gray-300 border-gray-500/30";
     }
   };
 
   const getRoleColor = (role: string) => {
     switch (role) {
       case "admin":
-        return "bg-red-500/20 text-red-400 border-red-500/30";
+        return "bg-blue-500/20 text-blue-300 border-blue-500/30";
       case "user":
-        return "bg-gray-500/20 text-gray-400 border-gray-500/30";
+        return "bg-purple-500/20 text-purple-300 border-purple-500/30";
       default:
-        return "bg-gray-500/20 text-gray-400 border-gray-500/30";
+        return "bg-gray-500/20 text-gray-300 border-gray-500/30";
     }
   };
 
@@ -406,8 +390,10 @@ export default function UsersManagementPage() {
   if (loading) {
     return (
       <AdminDashboardLayout>
-        <div className="flex items-center justify-center h-screen">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+        <div className="admin-container">
+          <div className="flex items-center justify-center h-screen">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+          </div>
         </div>
       </AdminDashboardLayout>
     );
@@ -415,301 +401,361 @@ export default function UsersManagementPage() {
 
   return (
     <AdminDashboardLayout>
-      <div className="container mx-auto px-4 py-8 users-container">
-        {/* Header */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4 users-header">
-          <div>
-            <h1 className="text-3xl font-bold flex items-center gap-2">
-              <Users className="h-8 w-8" />
-              User Management
-            </h1>
-            <p className="text-muted-foreground">
-              Manage and monitor all user accounts
-            </p>
+      <div className="admin-container">
+        {/* Animated Header */}
+        <div className="admin-header">
+          <div className="admin-header-content">
+            <div className="admin-header-text">
+              <h1 className="admin-title">
+                <Users className="admin-title-icon" />
+                User Management
+              </h1>
+              <p className="admin-subtitle">
+                Manage and monitor all user accounts
+              </p>
+            </div>
+            <div className="flex gap-4">
+              <Button
+                onClick={() => setIsCreateDialogOpen(true)}
+                className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white border-none"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Add User
+              </Button>
+            </div>
           </div>
-          <Button onClick={() => setIsCreateDialogOpen(true)}>
-            <Plus className="h-4 w-4 mr-2" />
-            Add User
-          </Button>
         </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Total Users</CardTitle>
-              <Users className="h-4 w-4 text-blue-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.totalUsers}</div>
-              <p className="text-xs text-muted-foreground flex items-center">
-                <TrendingUp className="h-3 w-3 mr-1" />+{stats.newUsersToday}{" "}
-                today
-              </p>
-            </CardContent>
-          </Card>
+        {/* Animated Stats Cards */}
+        <div className="admin-stats">
+          <div className="admin-stat-card stat-card-1">
+            <div className="admin-stat-header">
+              <div className="admin-stat-label">Total Users</div>
+              <div className="admin-stat-icon-container stat-icon-blue">
+                <Users className="admin-stat-icon" />
+              </div>
+            </div>
+            <div className="admin-stat-value">{stats.totalUsers}</div>
+            <div className="admin-stat-trend">
+              <TrendingUp className="admin-stat-trend-icon" />
+              <span>+{stats.newUsersToday} today</span>
+            </div>
+          </div>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">
-                Active Users
-              </CardTitle>
-              <Activity className="h-4 w-4 text-emerald-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.activeUsers}</div>
-              <p className="text-xs text-muted-foreground flex items-center">
-                <CheckCircle className="h-3 w-3 mr-1" />
+          <div className="admin-stat-card stat-card-2">
+            <div className="admin-stat-header">
+              <div className="admin-stat-label">Active Users</div>
+              <div className="admin-stat-icon-container stat-icon-emerald">
+                <Activity className="admin-stat-icon" />
+              </div>
+            </div>
+            <div className="admin-stat-value">{stats.activeUsers}</div>
+            <div className="admin-stat-trend">
+              <CheckCircle className="admin-stat-trend-icon" />
+              <span>
                 {Math.round((stats.activeUsers / stats.totalUsers) * 100)}%
                 active
-              </p>
-            </CardContent>
-          </Card>
+              </span>
+            </div>
+          </div>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Admin Users</CardTitle>
-              <Crown className="h-4 w-4 text-violet-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.adminUsers}</div>
-              <p className="text-xs text-muted-foreground">
-                {stats.userUsers} regular users
-              </p>
-            </CardContent>
-          </Card>
+          <div className="admin-stat-card stat-card-3">
+            <div className="admin-stat-header">
+              <div className="admin-stat-label">Admin Users</div>
+              <div className="admin-stat-icon-container stat-icon-violet">
+                <Crown className="admin-stat-icon" />
+              </div>
+            </div>
+            <div className="admin-stat-value">{stats.adminUsers}</div>
+            <div className="admin-stat-trend">
+              <span>{stats.userUsers} regular users</span>
+            </div>
+          </div>
         </div>
 
-        {/* Filters and Search */}
-        <Card className="mb-6">
-          <CardContent className="pt-6">
-            <div className="flex flex-col md:flex-row gap-4">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search users by name, email..."
-                  className="pl-9"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
+        {/* Main Content */}
+        <div className="admin-content">
+          {/* Filters and Search */}
+          <Card className="admin-card mb-6">
+            <CardContent className="pt-6">
+              <div className="flex flex-col md:flex-row gap-4">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                  <Input
+                    placeholder="Search users by name, email..."
+                    className="pl-9 bg-slate-700/50 border-slate-600 text-white placeholder:text-gray-400"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                </div>
+                <div className="flex gap-2">
+                  <Select value={statusFilter} onValueChange={setStatusFilter}>
+                    <SelectTrigger className="w-[180px] bg-slate-700/50 border-slate-600 text-white">
+                      <SelectValue placeholder="Status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Status</SelectItem>
+                      <SelectItem value="active">Active</SelectItem>
+                      <SelectItem value="pending">Pending</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Select value={roleFilter} onValueChange={setRoleFilter}>
+                    <SelectTrigger className="w-[180px] bg-slate-700/50 border-slate-600 text-white">
+                      <SelectValue placeholder="Role" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Roles</SelectItem>
+                      <SelectItem value="user">User</SelectItem>
+                      <SelectItem value="admin">Admin</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Button
+                    variant="outline"
+                    onClick={loadUsers}
+                    className="bg-slate-700/50 border-slate-600 text-white hover:bg-slate-600/50"
+                  >
+                    <RefreshCw className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
-              <div className="flex gap-2">
-                <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Status</SelectItem>
-                    <SelectItem value="active">Active</SelectItem>
-                    <SelectItem value="pending">Pending</SelectItem>
-                  </SelectContent>
-                </Select>
-                <Select value={roleFilter} onValueChange={setRoleFilter}>
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Role" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Roles</SelectItem>
-                    <SelectItem value="user">User</SelectItem>
-                    <SelectItem value="admin">Admin</SelectItem>
-                  </SelectContent>
-                </Select>
-                <Button variant="outline" onClick={loadUsers}>
-                  <RefreshCw className="h-4 w-4" />
+            </CardContent>
+          </Card>
+
+          {/* Users Table */}
+          <Card className="admin-card">
+            <CardContent className="pt-6">
+              <Table>
+                <TableHeader>
+                  <TableRow className="border-slate-700">
+                    <TableHead className="text-gray-300">Name</TableHead>
+                    <TableHead className="text-gray-300">Email</TableHead>
+                    <TableHead className="text-gray-300">Status</TableHead>
+                    <TableHead className="text-gray-300">Role</TableHead>
+                    <TableHead className="text-gray-300">Predictions</TableHead>
+                    <TableHead className="text-gray-300">Created</TableHead>
+                    <TableHead className="text-right text-gray-300">
+                      Actions
+                    </TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {getCurrentPageUsers().map((user, index) => (
+                    <TableRow
+                      key={user.id}
+                      className="border-slate-700 hover:bg-slate-700/30 transition-all duration-300"
+                      style={{ animationDelay: `${index * 0.1}s` }}
+                    >
+                      <TableCell>
+                        <div className="flex items-center gap-4">
+                          <Avatar className="border-2 border-blue-500/30">
+                            <AvatarImage
+                              src={user.avatar_url || "/placeholder.svg"}
+                            />
+                            <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white font-semibold">
+                              {user.full_name
+                                .split(" ")
+                                .map((n) => n[0])
+                                .join("")}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="font-medium text-white flex items-center gap-2">
+                            {user.full_name}
+                            {user.is_verified && (
+                              <CheckCircle className="h-4 w-4 text-green-400" />
+                            )}
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-sm text-gray-300">
+                        {maskEmail(user.email)}
+                      </TableCell>
+                      <TableCell>
+                        <Badge className={getStatusColor(user.status)}>
+                          {user.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Badge className={getRoleColor(user.role)}>
+                          {user.role}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-white font-semibold">
+                        {user.predictions_count}
+                      </TableCell>
+                      <TableCell className="text-gray-300">
+                        {formatDate(user.created_at)}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex justify-end gap-2">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="text-gray-400 hover:text-white hover:bg-slate-600/50"
+                            onClick={() => {
+                              setSelectedUser(user);
+                              setIsEditDialogOpen(true);
+                            }}
+                          >
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="text-red-400 hover:text-red-300 hover:bg-red-500/20"
+                            onClick={() => {
+                              setSelectedUser(user);
+                              setIsDeleteDialogOpen(true);
+                            }}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+            <CardFooter className="flex flex-col md:flex-row justify-between items-center gap-4 border-t border-slate-700">
+              <div className="text-sm text-gray-400">
+                Showing {(currentPage - 1) * usersPerPage + 1} to{" "}
+                {Math.min(currentPage * usersPerPage, filteredUsers.length)} of{" "}
+                {filteredUsers.length} users
+              </div>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => setCurrentPage(1)}
+                  disabled={currentPage === 1}
+                  className="bg-slate-700/50 border-slate-600 text-white hover:bg-slate-600/50"
+                >
+                  First
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                  disabled={currentPage === 1}
+                  className="bg-slate-700/50 border-slate-600 text-white hover:bg-slate-600/50"
+                >
+                  Previous
+                </Button>
+                <div className="flex items-center gap-1">
+                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                    let pageNum;
+                    if (totalPages <= 5) {
+                      pageNum = i + 1;
+                    } else if (currentPage <= 3) {
+                      pageNum = i + 1;
+                    } else if (currentPage >= totalPages - 2) {
+                      pageNum = totalPages - 4 + i;
+                    } else {
+                      pageNum = currentPage - 2 + i;
+                    }
+                    return (
+                      <Button
+                        key={pageNum}
+                        variant={
+                          currentPage === pageNum ? "default" : "outline"
+                        }
+                        onClick={() => setCurrentPage(pageNum)}
+                        className={`w-10 h-10 p-0 ${
+                          currentPage === pageNum
+                            ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white"
+                            : "bg-slate-700/50 border-slate-600 text-white hover:bg-slate-600/50"
+                        }`}
+                      >
+                        {pageNum}
+                      </Button>
+                    );
+                  })}
+                </div>
+                <Button
+                  variant="outline"
+                  onClick={() =>
+                    setCurrentPage(Math.min(totalPages, currentPage + 1))
+                  }
+                  disabled={currentPage === totalPages}
+                  className="bg-slate-700/50 border-slate-600 text-white hover:bg-slate-600/50"
+                >
+                  Next
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => setCurrentPage(totalPages)}
+                  disabled={currentPage === totalPages}
+                  className="bg-slate-700/50 border-slate-600 text-white hover:bg-slate-600/50"
+                >
+                  Last
                 </Button>
               </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Users Table */}
-        <Card>
-          <CardContent className="pt-6">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Role</TableHead>
-                  <TableHead>Predictions</TableHead>
-                  <TableHead>Created</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {getCurrentPageUsers().map((user) => (
-                  <TableRow key={user.id}>
-                    <TableCell>
-                      <div className="flex items-center gap-4">
-                        <Avatar>
-                          <AvatarImage src={user.avatar_url} />
-                          <AvatarFallback>
-                            {user.full_name
-                              .split(" ")
-                              .map((n) => n[0])
-                              .join("")}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="font-medium">{user.full_name}</div>
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-sm">
-                      {maskEmail(user.email)}
-                    </TableCell>
-                    <TableCell>
-                      <Badge className={getStatusColor(user.status)}>
-                        {user.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <Badge className={getRoleColor(user.role)}>
-                        {user.role}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>{user.predictions_count}</TableCell>
-                    <TableCell>{formatDate(user.created_at)}</TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-2">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => {
-                            setSelectedUser(user);
-                            setIsEditDialogOpen(true);
-                          }}
-                        >
-                          <Eye className="h-4 w-4" />
-                        </Button>
-
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="text-red-500 hover:text-red-600"
-                          onClick={() => {
-                            setSelectedUser(user);
-                            setIsDeleteDialogOpen(true);
-                          }}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-          <CardFooter className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <div className="text-sm text-muted-foreground">
-              Showing {(currentPage - 1) * usersPerPage + 1} to{" "}
-              {Math.min(currentPage * usersPerPage, filteredUsers.length)} of{" "}
-              {filteredUsers.length} users
-            </div>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                onClick={() => setCurrentPage(1)}
-                disabled={currentPage === 1}
-              >
-                First
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                disabled={currentPage === 1}
-              >
-                Previous
-              </Button>
-              <div className="flex items-center gap-1">
-                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                  let pageNum;
-                  if (totalPages <= 5) {
-                    pageNum = i + 1;
-                  } else if (currentPage <= 3) {
-                    pageNum = i + 1;
-                  } else if (currentPage >= totalPages - 2) {
-                    pageNum = totalPages - 4 + i;
-                  } else {
-                    pageNum = currentPage - 2 + i;
-                  }
-
-                  return (
-                    <Button
-                      key={pageNum}
-                      variant={currentPage === pageNum ? "default" : "outline"}
-                      onClick={() => setCurrentPage(pageNum)}
-                      className="w-10 h-10 p-0"
-                    >
-                      {pageNum}
-                    </Button>
-                  );
-                })}
-              </div>
-              <Button
-                variant="outline"
-                onClick={() =>
-                  setCurrentPage(Math.min(totalPages, currentPage + 1))
-                }
-                disabled={currentPage === totalPages}
-              >
-                Next
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => setCurrentPage(totalPages)}
-                disabled={currentPage === totalPages}
-              >
-                Last
-              </Button>
-            </div>
-          </CardFooter>
-        </Card>
+            </CardFooter>
+          </Card>
+        </div>
 
         {/* Edit User Dialog */}
         <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-          <DialogContent>
+          <DialogContent className="bg-slate-800 border-slate-700 text-white">
             <DialogHeader>
-              <DialogTitle>Edit User</DialogTitle>
-              <DialogDescription>
+              <DialogTitle className="text-white">Edit User</DialogTitle>
+              <DialogDescription className="text-gray-400">
                 Update user information and settings
               </DialogDescription>
             </DialogHeader>
             {selectedUser && (
               <Tabs defaultValue="profile">
-                <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="profile">Profile</TabsTrigger>
-                  <TabsTrigger value="activity">Activity</TabsTrigger>
+                <TabsList className="grid w-full grid-cols-2 bg-slate-700">
+                  <TabsTrigger value="profile" className="text-white">
+                    Profile
+                  </TabsTrigger>
+                  <TabsTrigger value="activity" className="text-white">
+                    Activity
+                  </TabsTrigger>
                 </TabsList>
                 <TabsContent value="profile">
                   <div className="grid gap-4 py-4">
                     <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="full_name" className="text-right">
+                      <Label
+                        htmlFor="full_name"
+                        className="text-right text-gray-300"
+                      >
                         Full Name
                       </Label>
-                      <div className="col-span-3">{selectedUser.full_name}</div>
+                      <div className="col-span-3 text-white">
+                        {selectedUser.full_name}
+                      </div>
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="email" className="text-right">
+                      <Label
+                        htmlFor="email"
+                        className="text-right text-gray-300"
+                      >
                         Email
                       </Label>
-                      <div className="col-span-3">
+                      <div className="col-span-3 text-white">
                         {maskEmail(selectedUser.email)}
                       </div>
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="phone" className="text-right">
+                      <Label
+                        htmlFor="phone"
+                        className="text-right text-gray-300"
+                      >
                         Phone
                       </Label>
-                      <div className="col-span-3">
+                      <div className="col-span-3 text-white">
                         {maskPhone(selectedUser.phone)}
                       </div>
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="role" className="text-right">
+                      <Label
+                        htmlFor="role"
+                        className="text-right text-gray-300"
+                      >
                         Role
                       </Label>
-                      <div className="col-span-3">{selectedUser.role}</div>
+                      <div className="col-span-3 text-white">
+                        {selectedUser.role}
+                      </div>
                     </div>
                   </div>
                 </TabsContent>
@@ -717,14 +763,16 @@ export default function UsersManagementPage() {
                   <div className="grid gap-4 py-4">
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <Label>Total Predictions</Label>
-                        <div className="text-lg font-semibold">
+                        <Label className="text-gray-300">
+                          Total Predictions
+                        </Label>
+                        <div className="text-lg font-semibold text-white">
                           {selectedUser.predictions_count}
                         </div>
                       </div>
                       <div>
-                        <Label>Last Sign In</Label>
-                        <div className="text-lg font-semibold">
+                        <Label className="text-gray-300">Last Sign In</Label>
+                        <div className="text-lg font-semibold text-white">
                           {formatDate(selectedUser.last_sign_in_at)}
                         </div>
                       </div>
@@ -737,10 +785,14 @@ export default function UsersManagementPage() {
               <Button
                 variant="outline"
                 onClick={() => setIsEditDialogOpen(false)}
+                className="bg-slate-700 border-slate-600 text-white hover:bg-slate-600"
               >
                 Cancel
               </Button>
-              <Button onClick={() => setIsEditDialogOpen(false)}>
+              <Button
+                onClick={() => setIsEditDialogOpen(false)}
+                className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white"
+              >
                 Save Changes
               </Button>
             </DialogFooter>
@@ -749,41 +801,44 @@ export default function UsersManagementPage() {
 
         {/* Create User Dialog */}
         <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-          <DialogContent>
+          <DialogContent className="bg-slate-800 border-slate-700 text-white">
             <DialogHeader>
-              <DialogTitle>Create New User</DialogTitle>
-              <DialogDescription>
+              <DialogTitle className="text-white">Create New User</DialogTitle>
+              <DialogDescription className="text-gray-400">
                 Add a new user to the system
               </DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="new_full_name" className="text-right">
+                <Label
+                  htmlFor="new_full_name"
+                  className="text-right text-gray-300"
+                >
                   Full Name
                 </Label>
                 <Input
                   id="new_full_name"
                   placeholder="Enter full name"
-                  className="col-span-3"
+                  className="col-span-3 bg-slate-700 border-slate-600 text-white"
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="new_email" className="text-right">
+                <Label htmlFor="new_email" className="text-right text-gray-300">
                   Email
                 </Label>
                 <Input
                   id="new_email"
                   type="email"
                   placeholder="Enter email address"
-                  className="col-span-3"
+                  className="col-span-3 bg-slate-700 border-slate-600 text-white"
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="new_role" className="text-right">
+                <Label htmlFor="new_role" className="text-right text-gray-300">
                   Role
                 </Label>
                 <Select defaultValue="user">
-                  <SelectTrigger className="col-span-3">
+                  <SelectTrigger className="col-span-3 bg-slate-700 border-slate-600 text-white">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -797,10 +852,14 @@ export default function UsersManagementPage() {
               <Button
                 variant="outline"
                 onClick={() => setIsCreateDialogOpen(false)}
+                className="bg-slate-700 border-slate-600 text-white hover:bg-slate-600"
               >
                 Cancel
               </Button>
-              <Button onClick={() => setIsCreateDialogOpen(false)}>
+              <Button
+                onClick={() => setIsCreateDialogOpen(false)}
+                className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white"
+              >
                 Create User
               </Button>
             </DialogFooter>
@@ -809,10 +868,10 @@ export default function UsersManagementPage() {
 
         {/* Delete Confirmation Dialog */}
         <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-          <DialogContent>
+          <DialogContent className="bg-slate-800 border-slate-700 text-white">
             <DialogHeader>
-              <DialogTitle>Delete User</DialogTitle>
-              <DialogDescription>
+              <DialogTitle className="text-white">Delete User</DialogTitle>
+              <DialogDescription className="text-gray-400">
                 Are you sure you want to delete this user? This action cannot be
                 undone.
               </DialogDescription>
@@ -821,12 +880,13 @@ export default function UsersManagementPage() {
               <div className="flex items-center gap-4 py-4">
                 <AlertTriangle className="h-12 w-12 text-red-500" />
                 <div>
-                  <p className="font-medium">
+                  <p className="font-medium text-white">
                     You are about to permanently delete{" "}
                     <strong>{selectedUser.full_name}</strong> (
-                    {selectedUser.email}).
+                    {selectedUser.email}
+                    ).
                   </p>
-                  <p className="text-sm text-muted-foreground mt-1">
+                  <p className="text-sm text-gray-400 mt-1">
                     This will remove all their data, predictions, and cannot be
                     recovered.
                   </p>
@@ -837,6 +897,7 @@ export default function UsersManagementPage() {
               <Button
                 variant="outline"
                 onClick={() => setIsDeleteDialogOpen(false)}
+                className="bg-slate-700 border-slate-600 text-white hover:bg-slate-600"
               >
                 Cancel
               </Button>
@@ -846,6 +907,7 @@ export default function UsersManagementPage() {
                   handleUserAction("delete", selectedUser?.id || "");
                   setIsDeleteDialogOpen(false);
                 }}
+                className="bg-red-600 hover:bg-red-700 text-white"
               >
                 Delete User
               </Button>
